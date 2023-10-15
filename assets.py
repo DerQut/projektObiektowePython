@@ -5,4 +5,5 @@ pygame.font.init()
 
 test = pygame.image.load("button.png")
 
-font = pygame.font.SysFont("Arial", 60)
+font1 = pygame.font.SysFont("Arial", 60)
+font2 = pygame.font.SysFont("Calibri", 60)

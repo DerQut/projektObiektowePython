@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+import calculator
+
 
 class Window:
 
@@ -16,15 +18,20 @@ class Window:
         self.elements = []
 
         self.running = True
+        self.is_clicking = False
 
     def get_events(self):
 
         events = pygame.event.get()
+        self.is_clicking = False
         for event in events:
             if event.type == pygame.WINDOWCLOSE:
                 self.running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.is_clicking = True
+
+            elif event.type == pygame.KEYDOWN:
                 ...
 
     def run(self):
@@ -39,7 +46,9 @@ class Window:
                 element.draw()
 
             if element.type == "Button":
-                element.mouse_check(mouse_pos)
+                if element.mouse_check(mouse_pos) and self.is_clicking:
+                    calculator.button_handler(element.button_id)
+
 
         self.screen.blit(self.surface, (0, 0))
 
