@@ -3,7 +3,7 @@ import pygame
 pygame.display.init()
 pygame.font.init()
 
-test = pygame.image.load("button.png")
+button = pygame.image.load("assets/button.png")
 
-font1 = pygame.font.SysFont("Arial", 60)
+SF_Pro = pygame.font.SysFont("SF-Pro", 60)
 font2 = pygame.font.SysFont("Ubuntu", 32)

@@ -74,10 +74,10 @@ class Text(Element):
 
 
 
-class Button(Element):
+class Button(Rect):
 
-    def __init__(self, surface, x_cord, y_cord, texture, button_id, is_visible=True):
-        super().__init__(surface, x_cord, y_cord, texture, is_visible)
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, button_id, is_visible=True):
+        super().__init__(surface, x_cord, y_cord, x_size, y_size, colour, is_visible)
 
         self.button_id = button_id
 
@@ -86,7 +86,7 @@ class Button(Element):
         self.is_highlighted = True
 
     def mouse_check(self, mouse_pos):
-        if self.x_cord+self.width > mouse_pos[0] > self.x_cord and self.y_cord+self.height > mouse_pos[1] > self.y_cord:
+        if self.x_cord + self.x_size + self.surface.x_cord > mouse_pos[0] > self.x_cord + self.surface.x_cord and self.y_cord + self.y_size + self.surface.y_cord > mouse_pos[1] > self.y_cord + self.surface.y_cord:
             self.is_highlighted = True
         else:
             self.is_highlighted = False
