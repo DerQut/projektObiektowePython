@@ -16,11 +16,11 @@ def button_handler(button_id):
 
 window = window.Window(1280, 720)
 
-test_button_1 = ui_elements.Button(window, 302, 0, assets.test, 1)
-test_button_2 = ui_elements.Button(window, 302, 32, assets.test, 2)
+test_button_1 = ui_elements.Button(window, 307, 5, assets.test, 1)
+test_button_2 = ui_elements.Button(window, 307, 42, assets.test, 2)
 
-hint_text_1 = ui_elements.Text(window, 340, 0, assets.font2, "POKAŻ / UKRYJ", (0, 0, 0))
-hint_text_2 = ui_elements.Text(window, 340, 32, assets.font2, "ZMIEŃ CZCIONKĘ", (0, 0, 0))
+hint_text_1 = ui_elements.Text(window, 345, 5, assets.font2, "Pokaż / ukryj", (0, 0, 0))
+hint_text_2 = ui_elements.Text(window, 345, 42, assets.font2, "Zmień czcionkę", (0, 0, 0))
 
 test_text = ui_elements.Text(window, 500, 500, assets.font1, "Dzień dobry!!", (0, 0, 0), False)
 
