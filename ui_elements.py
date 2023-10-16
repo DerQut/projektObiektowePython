@@ -4,9 +4,9 @@ import window
 
 class Rect:
 
-    def __init__(self, window, x_cord, y_cord, x_size, y_size, colour, is_visible=True):
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, is_visible=True):
 
-        self.window = window
+        self.surface = surface
 
         self.x_cord = x_cord
         self.y_cord = y_cord
@@ -22,24 +22,24 @@ class Rect:
 
         self.rect = pygame.rect.Rect(x_cord, y_cord, x_size, y_size)
 
-        self.window.elements.append(self)
+        self.surface.elements.append(self)
 
     def draw(self):
-        self.window.surface.fill(self.colour, self.rect)
+        self.surface.pg_surface.fill(self.colour, self.rect)
 
 
 class Element:
 
-    def __init__(self, window, x_cord, y_cord, texture, is_visible=True):
+    def __init__(self, surface, x_cord, y_cord, texture, is_visible=True):
 
-        self.window = window
+        self.surface = surface
 
         self.x_cord = x_cord
         self.y_cord = y_cord
 
         self.is_visible = is_visible
 
-        self.window.elements.append(self)
+        self.surface.elements.append(self)
 
         self.texture = texture
 
@@ -49,7 +49,7 @@ class Element:
         self.type = "Element"
 
     def draw(self):
-        self.window.surface.blit(self.texture, (self.x_cord, self.y_cord))
+        self.surface.pg_surface.blit(self.texture, (self.x_cord, self.y_cord))
 
     def change_texture(self, new_texture):
         self.texture = new_texture
@@ -60,8 +60,8 @@ class Element:
 
 class Text(Element):
 
-    def __init__(self, window, x_cord, y_cord, font, text, colour, is_visible=True):
-        super().__init__(window, x_cord, y_cord, font.render(text, False, colour), is_visible)
+    def __init__(self, surface, x_cord, y_cord, font, text, colour, is_visible=True):
+        super().__init__(surface, x_cord, y_cord, font.render(text, False, colour), is_visible)
 
         self.font = font
         self.text = text
@@ -76,8 +76,8 @@ class Text(Element):
 
 class Button(Element):
 
-    def __init__(self, window, x_cord, y_cord, texture, button_id, is_visible=True):
-        super().__init__(window, x_cord, y_cord, texture, is_visible)
+    def __init__(self, surface, x_cord, y_cord, texture, button_id, is_visible=True):
+        super().__init__(surface, x_cord, y_cord, texture, is_visible)
 
         self.button_id = button_id
 
@@ -92,3 +92,34 @@ class Button(Element):
             self.is_highlighted = False
 
         return self.is_highlighted
+
+
+class Surface:
+
+    def __init__(self, window, x_cord, y_cord, x_size, y_size, colour):
+
+        self.window = window
+
+        self.elements = []
+
+        self.x_cord = x_cord
+        self.y_cord = y_cord
+
+        self.x_size = x_size
+        self.y_size = y_size
+
+        self.colour = colour
+
+        self.pg_surface = pygame.surface.Surface((self.x_size, self.y_size))
+
+        self.window.surfaces.append(self)
+
+    def draw(self):
+
+        self.pg_surface.fill(self.colour)
+
+        for element in self.elements:
+            if element.is_visible:
+                element.draw()
+
+        self.window.screen.blit(self.pg_surface, (self.x_cord, self.y_cord))
