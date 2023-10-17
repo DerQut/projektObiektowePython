@@ -74,33 +74,30 @@ class Window:
 
                             if element.type == "Button" or element.type == "LabelledButton":
                                 if element.mouse_check(mouse_pos) and self.is_clicking:
-                                    calculator.button_handler(element.button_id)
+                                    calculator.button_handler(element.unicode_id)
                                     element.colour = element.secondary_colour
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 3:
                     for surface in self.surfaces:
                         for element in surface.elements:
-
                             if element.type == "Button" or element.type == "LabelledButton":
                                 element.colour = element.main_colour
 
             elif event.type == pygame.KEYDOWN:
-                if 0 <= int(chr(event.key)) <= 9:
-                    calculator.button_handler(chr(event.key))
-                    for surface in self.surfaces:
-                        for element in surface.elements:
-                            if element.type == "Button" or element.type == "LabelledButton":
-                                if element.button_id == int(chr(event.key)):
-                                    element.colour = element.secondary_colour
+                calculator.button_handler(event.key)
+                for surface in self.surfaces:
+                    for element in surface.elements:
+                        if element.type == "Button" or element.type == "LabelledButton":
+                            if element.unicode_id == event.key:
+                                element.colour = element.secondary_colour
 
             elif event.type == pygame.KEYUP:
-                if 0 <= int(chr(event.key)) <= 9:
-                    for surface in self.surfaces:
-                        for element in surface.elements:
-                            if element.type == "Button" or element.type == "LabelledButton":
-                                if element.button_id == int(chr(event.key)):
-                                    element.colour = element.main_colour
+                for surface in self.surfaces:
+                    for element in surface.elements:
+                        if element.type == "Button" or element.type == "LabelledButton":
+                            if element.unicode_id == event.key:
+                                element.colour = element.main_colour
 
     def run(self):
 

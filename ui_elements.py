@@ -79,10 +79,10 @@ class Text(Element):
 
 class Button(Rect):
 
-    def __init__(self, surface, x_cord, y_cord, x_size, y_size, main_colour, button_id, secondary_colour, is_visible=True):
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, main_colour, unicode_id, secondary_colour, is_visible=True):
         super().__init__(surface, x_cord, y_cord, x_size, y_size, main_colour, is_visible)
 
-        self.button_id = button_id
+        self.unicode_id = unicode_id
 
         self.secondary_colour = secondary_colour
 
@@ -101,8 +101,8 @@ class Button(Rect):
 
 class LabelledButton(Button):
 
-    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, button_id, secondary_colour, text,  text_colour, text_font, is_visible=True):
-        super().__init__(surface, x_cord, y_cord, x_size, y_size, colour, button_id, secondary_colour, is_visible)
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, unicode_id, secondary_colour, text,  text_colour, text_font, is_visible=True):
+        super().__init__(surface, x_cord, y_cord, x_size, y_size, colour, unicode_id, secondary_colour, is_visible)
 
         self.label = Text(self.surface, self.x_cord, self.y_cord, text_font, text, text_colour, is_visible)
 
