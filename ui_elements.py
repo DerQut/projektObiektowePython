@@ -4,7 +4,7 @@ import window
 
 class Rect:
 
-    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, is_visible=True):
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, main_colour, is_visible=True):
 
         self.surface = surface
 
@@ -14,7 +14,8 @@ class Rect:
         self.x_size = x_size
         self.y_size = y_size
 
-        self.colour = colour
+        self.main_colour = main_colour
+        self.colour = main_colour
 
         self.is_visible = is_visible
 
@@ -61,7 +62,7 @@ class Element:
 class Text(Element):
 
     def __init__(self, surface, x_cord, y_cord, font, text, colour, is_visible=True):
-        super().__init__(surface, x_cord, y_cord, font.render(text, False, colour), is_visible)
+        super().__init__(surface, x_cord, y_cord, font.render(text, True, colour), is_visible)
 
         self.font = font
         self.text = text
@@ -70,23 +71,27 @@ class Text(Element):
         self.type = "Text"
 
     def change_texture(self, new_font, new_text, new_colour):
-        super().change_texture(new_font.render(new_text, False, new_colour))
+        super().change_texture(new_font.render(new_text, True, new_colour))
 
+    def change_text(self, new_text):
+        self.change_texture(self.font, new_text, self.colour)
 
 
 class Button(Rect):
 
-    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, button_id, is_visible=True):
-        super().__init__(surface, x_cord, y_cord, x_size, y_size, colour, is_visible)
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, main_colour, button_id, secondary_colour, is_visible=True):
+        super().__init__(surface, x_cord, y_cord, x_size, y_size, main_colour, is_visible)
 
         self.button_id = button_id
+
+        self.secondary_colour = secondary_colour
 
         self.type = "Button"
 
         self.is_highlighted = True
 
     def mouse_check(self, mouse_pos):
-        if self.x_cord + self.x_size + self.surface.x_cord > mouse_pos[0] > self.x_cord + self.surface.x_cord and self.y_cord + self.y_size + self.surface.y_cord > mouse_pos[1] > self.y_cord + self.surface.y_cord:
+        if self.x_cord + self.x_size > mouse_pos[0] - self.surface.x_cord > self.x_cord and self.y_cord + self.y_size > mouse_pos[1] - self.surface.y_cord > self.y_cord:
             self.is_highlighted = True
         else:
             self.is_highlighted = False
@@ -94,32 +99,14 @@ class Button(Rect):
         return self.is_highlighted
 
 
-class Surface:
+class LabelledButton(Button):
 
-    def __init__(self, window, x_cord, y_cord, x_size, y_size, colour):
+    def __init__(self, surface, x_cord, y_cord, x_size, y_size, colour, button_id, secondary_colour, text,  text_colour, text_font, is_visible=True):
+        super().__init__(surface, x_cord, y_cord, x_size, y_size, colour, button_id, secondary_colour, is_visible)
 
-        self.window = window
+        self.label = Text(self.surface, self.x_cord, self.y_cord, text_font, text, text_colour, is_visible)
 
-        self.elements = []
+        self.label.x_cord = self.x_cord + (self.x_size - self.label.width)*0.5
+        self.label.y_cord = self.y_cord + (self.y_size - self.label.height)*0.5
 
-        self.x_cord = x_cord
-        self.y_cord = y_cord
-
-        self.x_size = x_size
-        self.y_size = y_size
-
-        self.colour = colour
-
-        self.pg_surface = pygame.surface.Surface((self.x_size, self.y_size))
-
-        self.window.surfaces.append(self)
-
-    def draw(self):
-
-        self.pg_surface.fill(self.colour)
-
-        for element in self.elements:
-            if element.is_visible:
-                element.draw()
-
-        self.window.screen.blit(self.pg_surface, (self.x_cord, self.y_cord))
+        self.type = "LabelledButton"

@@ -1,7 +1,41 @@
+# TODO: kalulator obecnie używa prawego klawisza myszy; dowiedz się, czemu lewy nie chciał działać
+
 import pygame
 from pygame.locals import *
 
 import calculator
+
+
+class Surface:
+
+    def __init__(self, window, x_cord, y_cord, x_size, y_size, colour):
+
+        self.window = window
+
+        self.elements = []
+
+        self.x_cord = x_cord
+        self.y_cord = y_cord
+
+        self.x_size = x_size
+        self.y_size = y_size
+
+        self.colour = colour
+
+        self.pg_surface = pygame.surface.Surface((self.x_size, self.y_size))
+
+        self.window.surfaces.append(self)
+
+    def draw(self):
+
+        self.pg_surface.fill(self.colour)
+
+        for element in self.elements:
+            if element.is_visible:
+                element.draw()
+
+        self.window.screen.blit(self.pg_surface, (self.x_cord, self.y_cord))
+
 
 
 class Window:
@@ -23,16 +57,50 @@ class Window:
     def get_events(self):
 
         events = pygame.event.get()
+
+        mouse_pos = pygame.mouse.get_pos()
         self.is_clicking = False
+
         for event in events:
             if event.type == pygame.WINDOWCLOSE:
                 self.running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.is_clicking = True
+                if event.button == 3:
+                    self.is_clicking = True
+
+                    for surface in self.surfaces:
+                        for element in surface.elements:
+
+                            if element.type == "Button" or element.type == "LabelledButton":
+                                if element.mouse_check(mouse_pos) and self.is_clicking:
+                                    calculator.button_handler(element.button_id)
+                                    element.colour = element.secondary_colour
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 3:
+                    for surface in self.surfaces:
+                        for element in surface.elements:
+
+                            if element.type == "Button" or element.type == "LabelledButton":
+                                element.colour = element.main_colour
 
             elif event.type == pygame.KEYDOWN:
-                ...
+                if 0 <= int(chr(event.key)) <= 9:
+                    calculator.button_handler(chr(event.key))
+                    for surface in self.surfaces:
+                        for element in surface.elements:
+                            if element.type == "Button" or element.type == "LabelledButton":
+                                if element.button_id == int(chr(event.key)):
+                                    element.colour = element.secondary_colour
+
+            elif event.type == pygame.KEYUP:
+                if 0 <= int(chr(event.key)) <= 9:
+                    for surface in self.surfaces:
+                        for element in surface.elements:
+                            if element.type == "Button" or element.type == "LabelledButton":
+                                if element.button_id == int(chr(event.key)):
+                                    element.colour = element.main_colour
 
     def run(self):
 
@@ -41,15 +109,6 @@ class Window:
         for surface in self.surfaces:
             surface.draw()
 
-        mouse_pos = pygame.mouse.get_pos()
         self.get_events()
-
-        for element in self.surfaces[0].elements:
-            if element.is_visible:
-                element.draw()
-
-            if element.type == "Button":
-                if element.mouse_check(mouse_pos) and self.is_clicking:
-                    calculator.button_handler(element.button_id)
 
         pygame.display.flip()
