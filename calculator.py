@@ -52,6 +52,10 @@ class Calc:
             self.text_obj.text = self.text_obj.text + "."
             self.has_comma = True
 
+    def divide_by_100(self):
+        if not self.has_comma:
+            ...
+
     def clear(self):
         self.has_comma = False
         self.text_obj.text = "0"
@@ -66,27 +70,33 @@ class Calc:
             self.value = float(self.text_obj.text + "0")
             self.number_count = len(self.text_obj.text)-1
 
+    def calculate_string(self):
+        if self.value == int(self.value):
+            self.has_comma = False
+            self.text_obj.text = str(self.text_obj.text)
+
 
 def button_handler(event_key, is_shifting):
 
-    if 48 <= event_key <= 57 and not is_shifting:
+    if pygame.K_0 <= event_key <= pygame.K_9 and not is_shifting:
         calculator_obj.change_display_value(event_key-48)
 
-    elif event_key == 27:
+    elif event_key == pygame.K_ESCAPE:
         calculator_obj.clear()
 
     elif event_key == 44:
         calculator_obj.add_comma()
 
-    elif event_key == 8:
+    elif event_key == pygame.K_BACKSPACE:
         calculator_obj.backspace()
 
+    elif event_key == 53 and is_shifting or event_key == pygame.K_PERCENT:
+        calculator_obj.divide_by_100()
+
     calculator_obj.text_obj.reload()
-    calculator_obj.text_obj.push_right()
+    calculator_obj.text_obj.push_right(8)
 
     calculator_obj.calculate_value()
-
-    print(calculator_obj.value)
 
 
 def key_unifier(event_key):
@@ -96,12 +106,14 @@ def key_unifier(event_key):
         return pygame.K_EQUALS
     return event_key
 
+
 def key_separator(event_key):
     if event_key == pygame.K_5:
         return pygame.K_PERCENT
     if event_key == pygame.K_8:
         return pygame.K_ASTERISK
     return event_key
+
 
 bg_colour = (43, 34, 34)
 

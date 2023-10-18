@@ -5,7 +5,7 @@ import pygame
 if __name__ == "__main__":
 
     import calculator
-    calculator.calculator_obj.text_obj.push_right()
+    calculator.calculator_obj.text_obj.push_right(8)
 
     clock = pygame.time.Clock()
 

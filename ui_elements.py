@@ -79,9 +79,9 @@ class Text(Element):
     def reload(self):
         self.change_texture(self.font, self.text, self.colour)
 
-    def push_right(self):
+    def push_right(self, offset):
 
-        self.x_cord = self.surface.x_size - self.texture.get_width() - 2
+        self.x_cord = self.surface.x_size - self.texture.get_width() - offset
 
 
 class Button(Rect):
