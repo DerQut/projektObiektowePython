@@ -38,7 +38,7 @@ class Surface:
 
 class Window:
 
-    def __init__(self, x_size, y_size, flags, bg_colour):
+    def __init__(self, x_size, y_size, flags, bg_colour, name):
 
         self.x_size = x_size
         self.y_size = y_size
@@ -46,6 +46,7 @@ class Window:
         self.surfaces = []
 
         self.screen = pygame.display.set_mode((self.x_size, self.y_size), flags)
+        pygame.display.set_caption(name)
 
         self.bg_colour = bg_colour
 
@@ -75,7 +76,10 @@ class Window:
                     self.is_shifting = True
                 event.key = calculator.key_unifier(event.key)
 
-                calculator.button_handler(event.key)
+                calculator.button_handler(event.key, self.is_shifting)
+
+                if self.is_shifting:
+                    event.key = calculator.key_separator(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
@@ -89,6 +93,14 @@ class Window:
                     self.is_shifting = False
 
                 event.key = calculator.key_unifier(event.key)
+
+                for surface in self.surfaces:
+                    for element in surface.elements:
+                        if element.type == "Button" or element.type == "LabelledButton":
+                            if element.unicode_id == event.key:
+                                element.colour = element.main_colour
+
+                event.key = calculator.key_separator(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
@@ -116,7 +128,7 @@ class Window:
 
                     if element.type == "Button" or element.type == "LabelledButton":
                         if element.mouse_check(mouse_pos) and self.is_clicking:
-                            calculator.button_handler(element.unicode_id)
+                            calculator.button_handler(element.unicode_id, self.is_shifting)
                             element.colour = element.secondary_colour
 
     def mouse_button_up_handler(self, event):
