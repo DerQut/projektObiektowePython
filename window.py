@@ -75,8 +75,7 @@ class Window:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = True
-                elif event.key == pygame.K_PERIOD:
-                    event.key = pygame.K_COMMA
+                event.key = calculator.key_merger(event.key)
 
                 calculator.button_handler(event.key)
                 for surface in self.surfaces:
@@ -89,8 +88,8 @@ class Window:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = False
-                elif event.key == pygame.K_PERIOD:
-                    event.key = pygame.K_COMMA
+
+                event.key = calculator.key_merger(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
