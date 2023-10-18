@@ -76,6 +76,9 @@ class Text(Element):
     def change_text(self, new_text):
         self.change_texture(self.font, new_text, self.colour)
 
+    def reload(self):
+        self.change_texture(self.font, self.text, self.colour)
+
 
 class Button(Rect):
 

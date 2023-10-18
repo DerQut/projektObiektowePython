@@ -1,3 +1,5 @@
+# TODO utilise the key_handler function to reduce clutter in window.py
+
 import pygame
 from pygame.locals import *
 

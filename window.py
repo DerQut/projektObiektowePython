@@ -1,4 +1,5 @@
 # TODO: kalulator obecnie używa prawego klawisza myszy; dowiedz się, czemu lewy nie chciał działać
+# TODO: prawdopodobnie przez zjebanego hackintosha- sprawdź, czy linux i windows też tak mają
 
 import pygame
 from pygame.locals import *
