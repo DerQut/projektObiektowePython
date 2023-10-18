@@ -53,6 +53,7 @@ class Window:
 
         self.running = True
         self.is_clicking = False
+        self.is_shifting = False
 
     def get_events(self):
 
@@ -66,33 +67,31 @@ class Window:
                 self.running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 3:
-                    self.is_clicking = True
-
-                    for surface in self.surfaces:
-                        for element in surface.elements:
-
-                            if element.type == "Button" or element.type == "LabelledButton":
-                                if element.mouse_check(mouse_pos) and self.is_clicking:
-                                    calculator.button_handler(element.unicode_id)
-                                    element.colour = element.secondary_colour
-
+                self.mouse_button_down_handler(mouse_pos, event)
             elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 3:
-                    for surface in self.surfaces:
-                        for element in surface.elements:
-                            if element.type == "Button" or element.type == "LabelledButton":
-                                element.colour = element.main_colour
+                self.mouse_button_up_handler(event)
 
             elif event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_LSHIFT:
+                    self.is_shifting = True
+                elif event.key == pygame.K_PERIOD:
+                    event.key = pygame.K_COMMA
+
                 calculator.button_handler(event.key)
                 for surface in self.surfaces:
                     for element in surface.elements:
                         if element.type == "Button" or element.type == "LabelledButton":
-                            if element.unicode_id == event.key:
+                            if element.unicode_id == event.key and self.is_shifting == element.needs_shift:
                                 element.colour = element.secondary_colour
 
             elif event.type == pygame.KEYUP:
+
+                if event.key == pygame.K_LSHIFT:
+                    self.is_shifting = False
+                elif event.key == pygame.K_PERIOD:
+                    event.key = pygame.K_COMMA
+
                 for surface in self.surfaces:
                     for element in surface.elements:
                         if element.type == "Button" or element.type == "LabelledButton":
@@ -109,3 +108,27 @@ class Window:
         self.get_events()
 
         pygame.display.flip()
+
+    def mouse_button_down_handler(self, mouse_pos, event):
+        if event.button == 3:
+            self.is_clicking = True
+
+            for surface in self.surfaces:
+                for element in surface.elements:
+
+                    if element.type == "Button" or element.type == "LabelledButton":
+                        if element.mouse_check(mouse_pos) and self.is_clicking:
+                            calculator.button_handler(element.unicode_id)
+                            element.colour = element.secondary_colour
+
+    def mouse_button_up_handler(self, event):
+        if event.button == 3:
+            self.is_clicking = False
+
+            for surface in self.surfaces:
+                for element in surface.elements:
+
+                    if element.type == "Button" or element.type == "LabelledButton":
+                        element.colour = element.main_colour
+
+

@@ -7,8 +7,11 @@ import ui_elements
 import assets
 
 
-def button_handler(button_id):
-    print(button_id)
+def button_handler(event):
+    print(event)
+
+def key_handler(window, event):
+    print(event)
 
 
 bg_colour = (43, 34, 34)
@@ -22,7 +25,7 @@ dark_orange = (190, 106, 10)
 
 text_colour = (255, 255, 255)
 
-calculator_window = window.Window(574, 304, DOUBLEBUF, bg_colour)
+calculator_window = window.Window(227, 304, DOUBLEBUF, bg_colour)
 
 number_surface = window.Surface(calculator_window, 0, 112, 170, 191, bg_colour)
 
@@ -43,9 +46,9 @@ button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button
 orange_surface = window.Surface(calculator_window, 171, 64, 56, 239, bg_colour)
 
 button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, 47, dark_orange, "÷", text_colour, assets.SF_Pro)
-button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, 120, dark_orange, "×", text_colour, assets.SF_Pro)
+button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, 56, dark_orange, "×", text_colour, assets.SF_Pro, True)
 button_subtract = ui_elements.LabelledButton(orange_surface, 0, 96, 56, 47, orange, 45, dark_orange, "−", text_colour, assets.SF_Pro)
-button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, 61, dark_orange, "+", text_colour, assets.SF_Pro)
-button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, 13, dark_orange, "=", text_colour, assets.SF_Pro)
+button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, 61, dark_orange, "+", text_colour, assets.SF_Pro, True)
+button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, 61, dark_orange, "=", text_colour, assets.SF_Pro)
 
 
