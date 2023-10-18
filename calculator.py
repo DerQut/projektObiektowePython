@@ -17,11 +17,18 @@ def button_handler(event_key):
         if display_text.text == "0":
             display_text.text = str(event_key-48)
         else:
-            display_text.text = str(display_text.text + str(int(event_key)-48))
+            if len(display_text.text) < 8:
+                display_text.text = str(display_text.text + str(int(event_key)-48))
             print(display_text.text)
 
     elif event_key == 27:
         display_text.text = "0"
+
+    elif event_key == 44:
+        display_text.text = display_text.text + ","
+
+    elif event_key == 8:
+        display_text.text = "".join(list(event_key).pop())
 
     display_text.reload()
     display_text.push_right()
