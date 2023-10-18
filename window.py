@@ -76,7 +76,7 @@ class Window:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = True
-                event.key = calculator.key_merger(event.key)
+                event.key = calculator.key_unifier(event.key)
 
                 calculator.button_handler(event.key)
                 for surface in self.surfaces:
@@ -90,7 +90,7 @@ class Window:
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = False
 
-                event.key = calculator.key_merger(event.key)
+                event.key = calculator.key_unifier(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:

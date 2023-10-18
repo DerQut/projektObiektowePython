@@ -17,7 +17,7 @@ def key_handler(window, event):
     print(event)
 
 
-def key_merger(event_key):
+def key_unifier(event_key):
     if event_key == pygame.K_PERIOD:
         return pygame.K_COMMA
     elif event_key == pygame.K_RETURN:
