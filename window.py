@@ -1,6 +1,3 @@
-# TODO: kalulator obecnie używa prawego klawisza myszy; dowiedz się, czemu lewy nie chciał działać
-# TODO: prawdopodobnie przez zjebanego hackintosha- sprawdź, czy linux i windows też tak mają
-
 import pygame
 from pygame.locals import *
 
@@ -79,6 +76,7 @@ class Window:
                 event.key = calculator.key_unifier(event.key)
 
                 calculator.button_handler(event.key)
+
                 for surface in self.surfaces:
                     for element in surface.elements:
                         if element.type == "Button" or element.type == "LabelledButton":
@@ -110,7 +108,7 @@ class Window:
         pygame.display.flip()
 
     def mouse_button_down_handler(self, mouse_pos, event):
-        if event.button == 3:
+        if event.button == 1:
             self.is_clicking = True
 
             for surface in self.surfaces:
@@ -122,7 +120,7 @@ class Window:
                             element.colour = element.secondary_colour
 
     def mouse_button_up_handler(self, event):
-        if event.button == 3:
+        if event.button == 1:
             self.is_clicking = False
 
             for surface in self.surfaces:
