@@ -2,8 +2,8 @@ import pygame
 
 # TODO: kalulator jak w windows: JEDNO POLE EDYCYJNE, guziczki, PRZECINEK (lub kropka), sinusy cosinusy
 
-if __name__ == "__main__":
 
+def main():
     import calculator
     calculator.calculator_obj.text_obj.push_right(8)
 
@@ -14,3 +14,7 @@ if __name__ == "__main__":
         clock.tick(150)
 
         calculator.calculator_window.run()
+
+
+if __name__ == "__main__":
+    main()
