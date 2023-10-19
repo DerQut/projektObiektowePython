@@ -1,5 +1,3 @@
-# TODO utilise the key_handler function to reduce clutter in window.py
-
 import pygame
 from pygame.locals import *
 
@@ -25,6 +23,7 @@ class Calc:
         self.number_count = 0
 
         self.has_comma = False
+        self.is_negative = False
 
     def change_display_value(self, key_pressed):
 
@@ -35,7 +34,7 @@ class Calc:
             self.text_obj.text = str(key_pressed)
 
     def backspace(self):
-        if self.text_obj.text != "0":
+        if self.text_obj.text != "0" and self.text_obj.text[0] and not (self.is_negative and len(self.text_obj.text) < 3):
             self.text_obj.text = list(self.text_obj.text)
             deleted = self.text_obj.text.pop()
             self.text_obj.text = ''.join(self.text_obj.text)
@@ -46,6 +45,10 @@ class Calc:
             if len(self.text_obj.text) == 0:
                 self.text_obj.text = "0"
 
+        else:
+            self.text_obj.text = "0"
+            self.is_negative = False
+
     def add_comma(self):
 
         if (not self.has_comma) and self.number_count < self.max_length:
@@ -53,27 +56,42 @@ class Calc:
             self.has_comma = True
 
     def divide_by_100(self):
-        if not self.has_comma:
-            ...
+        self.text_obj.text = str(self.value * 0.01)
+        if self.value % 100:
+            self.has_comma = True
+            self.crop()
+        else:
+            self.has_comma = False
+            self.text_obj.text = str(int(self.value*0.01))
+
+        self.calculate_value()
 
     def clear(self):
         self.has_comma = False
+        self.is_negative = False
         self.text_obj.text = "0"
+        self.number_count = 1
+
+    def change_sign(self):
+        self.text_obj.text = str(self.value*-1)
+        self.is_negative = not self.is_negative
 
     def calculate_value(self):
 
+        self.number_count = len(self.text_obj.text) - int(self.has_comma) - int(self.is_negative)
+
         if not self.has_comma:
             self.value = int(self.text_obj.text)
-            self.number_count = len(self.text_obj.text)
 
         else:
             self.value = float(self.text_obj.text + "0")
-            self.number_count = len(self.text_obj.text)-1
 
-    def calculate_string(self):
-        if self.value == int(self.value):
-            self.has_comma = False
-            self.text_obj.text = str(self.text_obj.text)
+        print(self.value)
+
+    def crop(self):
+        if len(self.text_obj.text) - self.has_comma - self.is_negative > self.max_length:
+            self.text_obj.text = "{:.7f}".format(float(self.text_obj.text))
+            self.calculate_value()
 
 
 def button_handler(event_key, is_shifting):
@@ -92,6 +110,9 @@ def button_handler(event_key, is_shifting):
 
     elif event_key == 53 and is_shifting or event_key == pygame.K_PERCENT:
         calculator_obj.divide_by_100()
+
+    elif event_key == pygame.K_BACKSLASH:
+        calculator_obj.change_sign()
 
     calculator_obj.text_obj.reload()
     calculator_obj.text_obj.push_right(8)
@@ -156,11 +177,11 @@ button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orang
 top_gray_surface = window.Surface(calculator_window, 0, 56, 170, 47, bg_colour)
 
 button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, 27, button_colour_light, "AC", text_colour, assets.SF_Pro_Medium_20)
-button_negate = ui_elements.LabelledButton(top_gray_surface, 57, 0, 56, 47, button_colour_dark, 45, button_colour_light, "⁺⁄₋", text_colour, assets.SF_Pro_Medium_20, True)
+button_negate = ui_elements.LabelledButton(top_gray_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_BACKSLASH, button_colour_light, "⁺⁄₋", text_colour, assets.SF_Pro_Medium_20)
 button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, 37, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
 
 
 top_display_surface = window.Surface(calculator_window, 0, 0, 227, 56, bg_colour)
 
-calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_44, "0", text_colour), 8)
+calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 8)
 
