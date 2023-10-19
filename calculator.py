@@ -59,7 +59,6 @@ class Calc:
         self.text_obj.text = str(self.value * 0.01)
         if self.value % 100:
             self.has_comma = True
-            self.crop()
         else:
             self.has_comma = False
             self.text_obj.text = str(int(self.value*0.01))
@@ -77,6 +76,8 @@ class Calc:
         self.is_negative = not self.is_negative
 
     def calculate_value(self):
+
+        self.crop()
 
         self.number_count = len(self.text_obj.text) - int(self.has_comma) - int(self.is_negative)
 
