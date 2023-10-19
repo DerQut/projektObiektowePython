@@ -20,7 +20,7 @@ class Calc:
         self.value = 0
         self.buffer = 0
 
-        self.number_count = 0
+        self.number_count = 1
 
         self.has_comma = False
         self.is_negative = False
@@ -91,7 +91,9 @@ class Calc:
 
     def crop(self):
         if len(self.text_obj.text) - self.has_comma - self.is_negative > self.max_length:
-            self.text_obj.text = "{:.7f}".format(float(self.text_obj.text))
+            self.text_obj.text = "{:.2f}".format(float(self.text_obj.text))
+            if self.text_obj.text == "0.00":
+                self.text_obj.text = "0"
             self.calculate_value()
 
 
@@ -103,13 +105,13 @@ def button_handler(event_key, is_shifting):
     elif event_key == pygame.K_ESCAPE:
         calculator_obj.clear()
 
-    elif event_key == 44:
+    elif event_key == pygame.K_COMMA:
         calculator_obj.add_comma()
 
     elif event_key == pygame.K_BACKSPACE:
         calculator_obj.backspace()
 
-    elif event_key == 53 and is_shifting or event_key == pygame.K_PERCENT:
+    elif event_key == pygame.K_5 and is_shifting or event_key == pygame.K_PERCENT:
         calculator_obj.divide_by_100()
 
     elif event_key == pygame.K_BACKSLASH:
