@@ -184,4 +184,3 @@ button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, bu
 top_display_surface = window.Surface(calculator_window, 0, 0, 227, 56, bg_colour)
 
 calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 8)
-
