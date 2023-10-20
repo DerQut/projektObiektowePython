@@ -65,11 +65,15 @@ class Calc:
 
         self.calculate_value()
 
-    def clear(self):
+    def soft_clear(self):
         self.has_comma = False
         self.is_negative = False
         self.text_obj.text = "0"
         self.number_count = 1
+
+    def hard_clear(self):
+        self.soft_clear()
+        self.buffer = 0
 
     def change_sign(self):
         self.text_obj.text = str(self.value*-1)
@@ -103,7 +107,10 @@ def button_handler(event_key, is_shifting):
         calculator_obj.change_display_value(event_key-48)
 
     elif event_key == pygame.K_ESCAPE:
-        calculator_obj.clear()
+        if not is_shifting:
+            calculator_obj.soft_clear()
+        else:
+            calculator_obj.hard_clear()
 
     elif event_key == pygame.K_COMMA:
         calculator_obj.add_comma()
@@ -116,6 +123,13 @@ def button_handler(event_key, is_shifting):
 
     elif event_key == pygame.K_BACKSLASH:
         calculator_obj.change_sign()
+
+    elif event_key == K_LSHIFT:
+        if is_shifting:
+            button_clear.label.change_text("AC")
+        else:
+            button_clear.label.change_text("C")
+        button_clear.center_text()
 
     calculator_obj.text_obj.reload()
     calculator_obj.text_obj.push_right(8)
@@ -179,7 +193,7 @@ button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orang
 
 top_gray_surface = window.Surface(calculator_window, 0, 56, 170, 47, bg_colour)
 
-button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, 27, button_colour_light, "AC", text_colour, assets.SF_Pro_Medium_20)
+button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, 27, button_colour_light, "C", text_colour, assets.SF_Pro_Medium_20, 0.5)
 button_negate = ui_elements.LabelledButton(top_gray_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_BACKSLASH, button_colour_light, "⁺⁄₋", text_colour, assets.SF_Pro_Medium_20)
 button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, 37, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
 

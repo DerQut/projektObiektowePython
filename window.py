@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-import calculator
+import calculator as program
 
 
 class Surface:
@@ -74,25 +74,26 @@ class Window:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = True
-                event.key = calculator.key_unifier(event.key)
+                event.key = program.key_unifier(event.key)
 
-                calculator.button_handler(event.key, self.is_shifting)
+                program.button_handler(event.key, self.is_shifting)
 
                 if self.is_shifting:
-                    event.key = calculator.key_separator(event.key)
+                    event.key = program.key_separator(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
                         if element.type == "Button" or element.type == "LabelledButton":
-                            if element.unicode_id == event.key and self.is_shifting == element.needs_shift:
+                            if element.unicode_id == event.key and (self.is_shifting == element.needs_shift or element.needs_shift == 0.5):
                                 element.colour = element.secondary_colour
 
             elif event.type == pygame.KEYUP:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = False
+                    program.button_handler(event.key, self.is_shifting)
 
-                event.key = calculator.key_unifier(event.key)
+                event.key = program.key_unifier(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
@@ -100,7 +101,7 @@ class Window:
                             if element.unicode_id == event.key:
                                 element.colour = element.main_colour
 
-                event.key = calculator.key_separator(event.key)
+                event.key = program.key_separator(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
@@ -128,7 +129,7 @@ class Window:
 
                     if element.type == "Button" or element.type == "LabelledButton":
                         if element.mouse_check(mouse_pos) and self.is_clicking:
-                            calculator.button_handler(element.unicode_id, self.is_shifting)
+                            program.button_handler(element.unicode_id, self.is_shifting)
                             element.colour = element.secondary_colour
 
     def mouse_button_up_handler(self, event):

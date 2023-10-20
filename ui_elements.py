@@ -115,7 +115,10 @@ class LabelledButton(Button):
 
         self.label = Text(self.surface, self.x_cord, self.y_cord, text_font, text, text_colour, is_visible)
 
-        self.label.x_cord = self.x_cord + (self.x_size - self.label.width)*0.5
-        self.label.y_cord = self.y_cord + (self.y_size - self.label.height)*0.5
+        self.center_text()
 
         self.type = "LabelledButton"
+
+    def center_text(self):
+        self.label.x_cord = self.x_cord + (self.x_size - self.label.width)*0.5
+        self.label.y_cord = self.y_cord + (self.y_size - self.label.height) * 0.5
