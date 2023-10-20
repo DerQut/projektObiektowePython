@@ -91,10 +91,10 @@ class Calc:
 
     def crop(self):
         if len(self.text_obj.text) - self.has_comma - self.is_negative > self.max_length:
-            self.text_obj.text = "{:.2f}".format(float(self.text_obj.text))
-            if self.text_obj.text == "0.00":
-                self.text_obj.text = "0"
-            self.calculate_value()
+            self.text_obj.text = "{:.4f}".format(float(self.text_obj.text))
+            if float(self.text_obj.text) == int(float(self.text_obj.text)):
+                self.text_obj.text = str(int(float(self.text_obj.text)))
+                self.has_comma = False
 
 
 def button_handler(event_key, is_shifting):
