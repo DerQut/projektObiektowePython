@@ -25,6 +25,9 @@ class Calc:
         self.has_comma = False
         self.is_negative = False
 
+        self.last_operator = ""
+        self.operation_buffer = 0
+
     def change_display_value(self, key_pressed):
 
         if self.text_obj.text != "0":
@@ -69,15 +72,18 @@ class Calc:
         self.has_comma = False
         self.is_negative = False
         self.text_obj.text = "0"
+        self.value = 0
         self.number_count = 1
 
     def hard_clear(self):
         self.soft_clear()
         self.buffer = 0
+        self.last_operator = ""
 
     def change_sign(self):
         self.text_obj.text = str(self.value*-1)
         self.is_negative = not self.is_negative
+        print(self.is_negative)
 
     def calculate_value(self):
 
@@ -91,14 +97,104 @@ class Calc:
         else:
             self.value = float(self.text_obj.text + "0")
 
-        print(self.value)
+    def add(self):
+
+        self.buffer = self.buffer + self.value
+        self.soft_clear()
+        self.last_operator = "+"
+        self.crop_buffer()
+
+    def subtract(self):
+
+        if self.buffer == 0:
+            self.buffer = self.value
+        else:
+            self.buffer = self.buffer - self.value
+        self.soft_clear()
+        self.last_operator = "-"
+        self.crop_buffer()
+
+    def multiply(self):
+        if self.buffer == 0:
+            self.buffer = self.buffer = self.value
+        else:
+            self.buffer = self.buffer * self.value
+
+        self.soft_clear()
+        self.last_operator = "*"
+        self.crop_buffer()
+
+    def divide(self):
+        if self.buffer == 0:
+            self.buffer = self.value
+        else:
+            if self.value:
+                self.buffer = self.buffer / self.value
+            else:
+                print("forbidden")
+                self.hard_clear()
+
+        self.soft_clear()
+        self.last_operator = "/"
+        self.crop_buffer()
+
+    def equals(self):
+
+        if self.last_operator == "+":
+            self.add()
+
+        elif self.last_operator == "*":
+            self.multiply()
+
+        elif self.last_operator == "/":
+            self.divide()
+
+        elif self.last_operator == "-":
+            self.subtract()
+
+        else:
+            self.buffer = self.value
+
+        self.last_operator = ""
+        self.value = self.buffer
+        self.buffer = 0
+        if self.value < 0:
+            self.is_negative = True
+        else:
+            self.is_negative = False
+        self.intify()
+        self.text_obj.text = str(self.value)
+        self.crop()
+
 
     def crop(self):
         if len(self.text_obj.text) - self.has_comma - self.is_negative > self.max_length:
-            self.text_obj.text = "{:.4f}".format(float(self.text_obj.text))
-            if float(self.text_obj.text) == int(float(self.text_obj.text)):
-                self.text_obj.text = str(int(float(self.text_obj.text)))
-                self.has_comma = False
+            if self.has_comma:
+                self.text_obj.text = "{:.4f}".format(float(self.text_obj.text))
+                if float(self.text_obj.text) == int(float(self.text_obj.text)):
+                    self.text_obj.text = str(int(float(self.text_obj.text)))
+                    self.has_comma = False
+            else:
+                self.text_obj.text = "9"*self.max_length
+                if self.is_negative:
+                    self.text_obj.text = "-" + self.text_obj.text
+                self.calculate_value()
+
+    def crop_buffer(self):
+        if abs(self.buffer >= int("1" + (self.max_length)*"0")):
+            if self.buffer > 0:
+                self.buffer = int("9"*self.max_length)
+            else:
+                self.buffer = int("-" + "9"*self.max_length)
+
+    def intify(self):
+        if int(self.value) == float(self.value):
+            self.value = int(self.value)
+            self.has_comma = False
+            print("inted")
+        else:
+            self.has_comma = True
+            print("not inted")
 
 
 def button_handler(event_key, is_shifting):
@@ -121,6 +217,21 @@ def button_handler(event_key, is_shifting):
     elif event_key == pygame.K_5 and is_shifting or event_key == pygame.K_PERCENT:
         calculator_obj.divide_by_100()
 
+    elif event_key == pygame.K_PLUS or event_key == pygame.K_EQUALS and is_shifting:
+        calculator_obj.add()
+
+    elif event_key == pygame.K_MINUS and not is_shifting:
+        calculator_obj.subtract()
+
+    elif event_key == pygame.K_ASTERISK or event_key == pygame.K_8 and is_shifting:
+        calculator_obj.multiply()
+
+    elif event_key == pygame.K_SLASH:
+        calculator_obj.divide()
+
+    elif event_key == pygame.K_EQUALS or event_key == pygame.K_PLUS and is_shifting:
+        calculator_obj.equals()
+
     elif event_key == pygame.K_BACKSLASH:
         calculator_obj.change_sign()
 
@@ -135,6 +246,8 @@ def button_handler(event_key, is_shifting):
     calculator_obj.text_obj.push_right(8)
 
     calculator_obj.calculate_value()
+
+    print(f"buffer: {calculator_obj.buffer}")
 
 
 def key_unifier(event_key):
