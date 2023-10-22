@@ -319,7 +319,7 @@ button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button
 
 orange_surface = window.Surface(calculator_window, 171, 56, 56, 239, bg_colour)
 
-button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, pygame.K_PLUS, dark_orange, "÷", text_colour, assets.SF_Pro_Medium_24)
+button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, pygame.K_SLASH, dark_orange, "÷", text_colour, assets.SF_Pro_Medium_24)
 button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, pygame.K_ASTERISK, dark_orange, "×", text_colour, assets.SF_Pro_Medium_24, True)
 button_subtract = ui_elements.LabelledButton(orange_surface, 0, 96, 56, 47, orange, pygame.K_MINUS, dark_orange, "−", text_colour, assets.SF_Pro_Medium_24)
 button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, pygame.K_PLUS, dark_orange, "+", text_colour, assets.SF_Pro_Medium_24, True)
