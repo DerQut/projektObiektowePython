@@ -1,3 +1,5 @@
+import math
+
 import pygame
 from pygame.locals import *
 
@@ -138,6 +140,18 @@ class Calc:
         self.last_operator = "/"
         self.crop_buffer()
 
+    def sin(self):
+        self.value = math.sin(self.value)
+        self.intify()
+        self.text_obj.text = str(self.value)
+        self.crop()
+
+    def cos(self):
+        self.value = math.cos(self.value)
+        self.intify()
+        self.text_obj.text = str(self.value)
+        self.crop()
+
     def equals(self):
 
         if self.last_operator == "+":
@@ -165,7 +179,6 @@ class Calc:
         self.intify()
         self.text_obj.text = str(self.value)
         self.crop()
-
 
     def crop(self):
         if len(self.text_obj.text) - self.has_comma - self.is_negative > self.max_length:
@@ -199,6 +212,9 @@ class Calc:
 
 def button_handler(event_key, is_shifting):
 
+    print(event_key)
+    print(pygame.K_EQUALS)
+
     if pygame.K_0 <= event_key <= pygame.K_9 and not is_shifting:
         calculator_obj.change_display_value(event_key-48)
 
@@ -217,23 +233,29 @@ def button_handler(event_key, is_shifting):
     elif event_key == pygame.K_5 and is_shifting or event_key == pygame.K_PERCENT:
         calculator_obj.divide_by_100()
 
-    elif event_key == pygame.K_PLUS or event_key == pygame.K_EQUALS and is_shifting:
+    elif event_key == pygame.K_PLUS or (event_key == pygame.K_EQUALS and is_shifting):
         calculator_obj.add()
 
     elif event_key == pygame.K_MINUS and not is_shifting:
         calculator_obj.subtract()
 
-    elif event_key == pygame.K_ASTERISK or event_key == pygame.K_8 and is_shifting:
+    elif event_key == pygame.K_ASTERISK or (event_key == pygame.K_8 and is_shifting):
         calculator_obj.multiply()
 
     elif event_key == pygame.K_SLASH:
         calculator_obj.divide()
 
-    elif event_key == pygame.K_EQUALS or event_key == pygame.K_PLUS and is_shifting:
+    elif event_key == pygame.K_EQUALS or (event_key == pygame.K_PLUS and is_shifting):
         calculator_obj.equals()
 
     elif event_key == pygame.K_BACKSLASH:
         calculator_obj.change_sign()
+
+    elif event_key == pygame.K_s:
+        calculator_obj.sin()
+
+    elif event_key == pygame.K_c:
+        calculator_obj.cos()
 
     elif event_key == K_LSHIFT:
         if is_shifting:
@@ -297,11 +319,11 @@ button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button
 
 orange_surface = window.Surface(calculator_window, 171, 56, 56, 239, bg_colour)
 
-button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, 47, dark_orange, "÷", text_colour, assets.SF_Pro_Medium_24)
-button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, 42, dark_orange, "×", text_colour, assets.SF_Pro_Medium_24, True)
-button_subtract = ui_elements.LabelledButton(orange_surface, 0, 96, 56, 47, orange, 45, dark_orange, "−", text_colour, assets.SF_Pro_Medium_24)
-button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, 61, dark_orange, "+", text_colour, assets.SF_Pro_Medium_24, True)
-button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, 61, dark_orange, "=", text_colour, assets.SF_Pro_Medium_24)
+button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, pygame.K_PLUS, dark_orange, "÷", text_colour, assets.SF_Pro_Medium_24)
+button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, pygame.K_ASTERISK, dark_orange, "×", text_colour, assets.SF_Pro_Medium_24, True)
+button_subtract = ui_elements.LabelledButton(orange_surface, 0, 96, 56, 47, orange, pygame.K_MINUS, dark_orange, "−", text_colour, assets.SF_Pro_Medium_24)
+button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, pygame.K_PLUS, dark_orange, "+", text_colour, assets.SF_Pro_Medium_24, True)
+button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, pygame.K_EQUALS, dark_orange, "=", text_colour, assets.SF_Pro_Medium_24)
 
 
 top_gray_surface = window.Surface(calculator_window, 0, 56, 170, 47, bg_colour)
