@@ -299,7 +299,7 @@ dark_orange = (190, 106, 10)
 
 text_colour = (255, 255, 255)
 
-calculator_window = window.Window(227, 296, DOUBLEBUF, bg_colour, "macOS Calculator")
+calculator_window = window.Window(227, 295, DOUBLEBUF, bg_colour, "macOS Calculator")
 
 number_surface = window.Surface(calculator_window, 0, 104, 170, 191, bg_colour)
 
