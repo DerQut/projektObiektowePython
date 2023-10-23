@@ -184,7 +184,8 @@ class Calc:
         self.simplify()
 
     def factorial(self):
-        self.value = math.factorial(self.value)
+        if not self.has_comma and self.value > 0:
+            self.value = math.factorial(self.value)
         self.simplify()
 
     def e(self):
@@ -195,12 +196,14 @@ class Calc:
         self.simplify()
 
     def log(self):
-        self.value = math.log10(self.value)
-        self.simplify()
+        if self.value > 0:
+            self.value = math.log10(self.value)
+            self.simplify()
 
     def ln(self):
-        self.value = math.log(self.value, math.e)
-        self.simplify()
+        if self.value > 0:
+            self.value = math.log(self.value, math.e)
+            self.simplify()
 
     def equals(self):
 
@@ -346,13 +349,14 @@ def button_handler(event_key, needs_shift, is_shifting):
 
     # Rad/Deg button
     elif event_key == pygame.K_d:
-        button_deg.label.change_text("Rad")
-        calculator_obj.uses_radians = False
+        if calculator_obj.uses_radians:
+            button_deg.label.change_text("Rad")
+            calculator_obj.uses_radians = False
+        else:
+            button_deg.label.change_text("Deg")
+            calculator_obj.uses_radians = True
         button_deg.center_text()
 
-    elif event_key == pygame.K_r:
-        button_deg.label.change_text("Deg")
-        calculator_obj.uses_radians = True
 
     elif event_key == pygame.K_EXCLAIM or (event_key == pygame.K_1 and is_shifting):
         calculator_obj.factorial()
@@ -363,6 +367,7 @@ def button_handler(event_key, needs_shift, is_shifting):
         else:
             button_clear.label.change_text("C")
         button_clear.center_text()
+
 
     calculator_obj.text_obj.reload()
     calculator_obj.text_obj.push_right(8)
