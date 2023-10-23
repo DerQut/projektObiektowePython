@@ -176,9 +176,31 @@ class Calc:
         self.simplify()
 
     def pi(self):
-        self.value = self.value * math.pi
+        if self.value:
+            self.value = self.value * math.pi
+        else:
+            self.value = math.pi
+
         self.simplify()
 
+    def factorial(self):
+        self.value = math.factorial(self.value)
+        self.simplify()
+
+    def e(self):
+        if self.value:
+            self.value = math.e * self.value
+        else:
+            self.value = math.e
+        self.simplify()
+
+    def log(self):
+        self.value = math.log10(self.value)
+        self.simplify()
+
+    def ln(self):
+        self.value = math.log(self.value, math.e)
+        self.simplify()
 
     def equals(self):
 
@@ -289,6 +311,7 @@ def button_handler(event_key, needs_shift, is_shifting):
     elif event_key == pygame.K_BACKSLASH:
         calculator_obj.change_sign()
 
+    # trigonometric functions
     elif event_key == pygame.K_s:
         if not is_shifting:
             calculator_obj.sin()
@@ -307,17 +330,32 @@ def button_handler(event_key, needs_shift, is_shifting):
         else:
             calculator_obj.tanh()
 
+    # constants
     elif event_key == pygame.K_p:
         calculator_obj.pi()
 
-    elif event_key == pygame.K_d:
-        if calculator_obj.uses_radians:
-            button_deg.label.change_text("Rad")
-            calculator_obj.uses_radians = False
+    elif event_key == pygame.K_e:
+        calculator_obj.e()
+
+    # logarithms
+    elif event_key == pygame.K_l:
+        if is_shifting:
+            calculator_obj.ln()
         else:
-            button_deg.label.change_text("Deg")
-            calculator_obj.uses_radians = True
+            calculator_obj.log()
+
+    # Rad/Deg button
+    elif event_key == pygame.K_d:
+        button_deg.label.change_text("Rad")
+        calculator_obj.uses_radians = False
         button_deg.center_text()
+
+    elif event_key == pygame.K_r:
+        button_deg.label.change_text("Deg")
+        calculator_obj.uses_radians = True
+
+    elif event_key == pygame.K_EXCLAIM or (event_key == pygame.K_1 and is_shifting):
+        calculator_obj.factorial()
 
     elif event_key == K_LSHIFT:
         if is_shifting:
@@ -407,7 +445,17 @@ button_deg = ui_elements.LabelledButton(scientific_surface, 0, 192, 56, 47, butt
 button_sinh = ui_elements.LabelledButton(scientific_surface, 57, 192, 56, 47, button_colour_dark, pygame.K_s, button_colour_light, "sinh", text_colour, assets.SF_Pro_Medium_20, True)
 button_cosh = ui_elements.LabelledButton(scientific_surface, 114, 192, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "cosh", text_colour, assets.SF_Pro_Medium_20, True)
 button_tanh = ui_elements.LabelledButton(scientific_surface, 171, 192, 56, 47, button_colour_dark, pygame.K_t, button_colour_light, "tanh", text_colour, assets.SF_Pro_Medium_20, True)
-button_pi = ui_elements.LabelledButton(scientific_surface, 228, 192, 56, 47, button_colour_dark, pygame.K_p, button_colour_light, "π", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_e = ui_elements.LabelledButton(scientific_surface, 228, 192, 56, 47, button_colour_dark, pygame.K_e, button_colour_light, "e", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_ln = ui_elements.LabelledButton(scientific_surface, 285, 192, 56, 47, button_colour_dark, pygame.K_l, button_colour_light, "ln", text_colour, assets.SF_Pro_Medium_20, True)
+
+button_factorial = ui_elements.LabelledButton(scientific_surface, 0, 144, 56, 47, button_colour_dark, pygame.K_1, button_colour_light, "x!", text_colour, assets.SF_Pro_Medium_20, True)
+button_sin = ui_elements.LabelledButton(scientific_surface, 57, 144, 56, 47, button_colour_dark, pygame.K_s, button_colour_light, "sin", text_colour, assets.SF_Pro_Medium_20, False)
+button_cos = ui_elements.LabelledButton(scientific_surface, 114, 144, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "cos", text_colour, assets.SF_Pro_Medium_20, False)
+button_tan = ui_elements.LabelledButton(scientific_surface, 171, 144, 56, 47, button_colour_dark, pygame.K_t, button_colour_light, "tan", text_colour, assets.SF_Pro_Medium_20, False)
+button_pi = ui_elements.LabelledButton(scientific_surface, 228, 144, 56, 47, button_colour_dark, pygame.K_p, button_colour_light, "π", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_log = ui_elements.LabelledButton(scientific_surface, 285, 144, 56, 47, button_colour_dark, pygame.K_l, button_colour_light, "log", text_colour, assets.SF_Pro_Medium_20, False)
+
+
 
 
 ###
