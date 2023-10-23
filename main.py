@@ -1,6 +1,7 @@
 import pygame
 
-# TODO: kalulator jak w windows: JEDNO POLE EDYCYJNE, guziczki, PRZECINEK (lub kropka), sinusy cosinusy
+# TODO wykresy, zaznacza dokładnie na wykresie wartość x i y trygonometrycznych, używaj pygame.draw.line()
+# TODO wykres funkcji kwadratowej, zaznacza pierwiastki rzeczywiste
 
 
 def main():
