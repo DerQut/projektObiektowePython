@@ -1,4 +1,5 @@
 import math
+import random
 
 import pygame
 from pygame.locals import *
@@ -31,6 +32,10 @@ class Calc:
 
         self.last_operator = ""
         self.operation_buffer = 0
+
+        self.ax2 = 0
+        self.bx = 0
+        self.c = 0
 
     def change_display_value(self, key_pressed):
 
@@ -83,11 +88,13 @@ class Calc:
         self.soft_clear()
         self.buffer = 0
         self.last_operator = ""
+        self.ax2 = 0
+        self.bx = 0
+        self.c = 0
 
     def change_sign(self):
         self.text_obj.text = str(self.value*-1)
         self.is_negative = not self.is_negative
-        print(self.is_negative)
 
     def calculate_value(self):
 
@@ -136,7 +143,6 @@ class Calc:
                 self.buffer = self.buffer / self.value
             else:
                 print("forbidden")
-                self.hard_clear()
 
         self.soft_clear()
         self.last_operator = "/"
@@ -184,7 +190,7 @@ class Calc:
         self.simplify()
 
     def factorial(self):
-        if not self.has_comma and self.value > 0:
+        if not self.has_comma and self.value >= 0:
             self.value = math.factorial(self.value)
         self.simplify()
 
@@ -193,6 +199,14 @@ class Calc:
             self.value = math.e * self.value
         else:
             self.value = math.e
+        self.simplify()
+
+    def e_to_x(self):
+        self.value = math.e ** self.value
+        self.simplify()
+
+    def ten_to_x(self):
+        self.value = 10 ** self.value
         self.simplify()
 
     def log(self):
@@ -204,6 +218,40 @@ class Calc:
         if self.value > 0:
             self.value = math.log(self.value, math.e)
             self.simplify()
+
+    def randomise(self):
+        self.value = random.uniform(0, 1)
+        self.simplify()
+
+    def coin_flip(self):
+        self.value = random.uniform(0, 1)
+        if self.value < 0.5:
+            self.value = 0
+        else:
+            self.value = 1
+        self.simplify()
+
+    def inverse(self):
+        if self.value:
+            self.value = 1/self.value
+            self.simplify()
+
+    def square(self):
+        self.value = self.value * self.value
+        self.simplify()
+
+    def cube(self):
+        self.value = self.value ** 3
+        self.simplify()
+
+    def square_root(self):
+        if self.value > 0:
+            self.value = math.sqrt(self.value)
+            self.simplify()
+
+    def cubic_root(self):
+        self.value = math.cbrt(self.value)
+        self.simplify()
 
     def equals(self):
 
@@ -255,10 +303,8 @@ class Calc:
         if int(self.value) == float(self.value):
             self.value = int(self.value)
             self.has_comma = False
-            print("inted")
         else:
             self.has_comma = True
-            print("not inted")
 
     def simplify(self):
         self.intify()
@@ -267,9 +313,6 @@ class Calc:
 
 
 def button_handler(event_key, needs_shift, is_shifting):
-
-    print(event_key)
-    print(pygame.K_EQUALS)
 
     if (needs_shift != is_shifting) and (needs_shift != 0.5):
         return
@@ -282,6 +325,19 @@ def button_handler(event_key, needs_shift, is_shifting):
             calculator_obj.soft_clear()
         else:
             calculator_obj.hard_clear()
+
+            button_ax2_value.label.colour = button_colour_light
+            button_bx_value.label.colour = button_colour_light
+            button_c_value.label.colour = button_colour_light
+
+            button_ax2_value.label.change_text("0")
+            button_ax2_value.center_text()
+
+            button_bx_value.label.change_text("0")
+            button_bx_value.center_text()
+
+            button_c_value.label.change_text("0")
+            button_c_value.center_text()
 
     elif event_key == pygame.K_COMMA:
         calculator_obj.add_comma()
@@ -321,7 +377,7 @@ def button_handler(event_key, needs_shift, is_shifting):
         else:
             calculator_obj.sinh()
 
-    elif event_key == pygame.K_c:
+    elif event_key == pygame.K_k:
         if not is_shifting:
             calculator_obj.cos()
         else:
@@ -334,11 +390,17 @@ def button_handler(event_key, needs_shift, is_shifting):
             calculator_obj.tanh()
 
     # constants
-    elif event_key == pygame.K_p:
+    elif event_key == pygame.K_p and not is_shifting:
         calculator_obj.pi()
 
+    elif event_key == pygame.K_f:
+        calculator_obj.coin_flip()
+
     elif event_key == pygame.K_e:
-        calculator_obj.e()
+        if not is_shifting:
+            calculator_obj.e()
+        else:
+            calculator_obj.e_to_x()
 
     # logarithms
     elif event_key == pygame.K_l:
@@ -348,7 +410,7 @@ def button_handler(event_key, needs_shift, is_shifting):
             calculator_obj.log()
 
     # Rad/Deg button
-    elif event_key == pygame.K_d:
+    elif event_key == pygame.K_m:
         if calculator_obj.uses_radians:
             button_deg.label.change_text("Rad")
             calculator_obj.uses_radians = False
@@ -357,9 +419,64 @@ def button_handler(event_key, needs_shift, is_shifting):
             calculator_obj.uses_radians = True
         button_deg.center_text()
 
-
     elif event_key == pygame.K_EXCLAIM or (event_key == pygame.K_1 and is_shifting):
         calculator_obj.factorial()
+
+    elif event_key == pygame.K_i:
+        calculator_obj.inverse()
+
+    elif event_key == pygame.K_d:
+        if is_shifting:
+            calculator_obj.square_root()
+        else:
+            calculator_obj.square()
+
+    elif event_key == pygame.K_q:
+        if is_shifting:
+            calculator_obj.cubic_root()
+        else:
+            calculator_obj.cube()
+
+    elif event_key == pygame.K_a:
+        button_ax2_value.center_text()
+        if is_shifting:
+            calculator_obj.ax2 = 0
+            button_ax2_value.label.colour = button_colour_light
+        else:
+            calculator_obj.ax2 = calculator_obj.value
+            button_ax2_value.label.colour = text_colour
+
+        button_ax2_value.label.text = "{:.2f}".format(calculator_obj.ax2)
+        button_ax2_value.label.reload()
+        button_ax2_value.center_text()
+
+
+    elif event_key == pygame.K_b:
+        button_bx_value.center_text()
+        if is_shifting:
+            calculator_obj.bx = 0
+            button_bx_value.label.colour = button_colour_light
+        else:
+            calculator_obj.bx = calculator_obj.value
+            button_bx_value.label.colour = text_colour
+
+        button_bx_value.label.text = "{:.2f}".format(calculator_obj.bx)
+        button_bx_value.label.reload()
+        button_bx_value.center_text()
+
+    elif event_key == pygame.K_c:
+        button_c_value.center_text()
+        if is_shifting:
+            calculator_obj.c = 0
+            button_c_value.label.colour = button_colour_light
+        else:
+            calculator_obj.c = calculator_obj.value
+            button_c_value.label.colour = text_colour
+
+        button_c_value.label.text = "{:.2f}".format(calculator_obj.c)
+        button_c_value.label.reload()
+        button_c_value.center_text()
+
 
     elif event_key == K_LSHIFT:
         if is_shifting:
@@ -368,13 +485,17 @@ def button_handler(event_key, needs_shift, is_shifting):
             button_clear.label.change_text("C")
         button_clear.center_text()
 
+    elif event_key == pygame.K_p and is_shifting:
+        print(10)
+        calculator_obj.ten_to_x()
+
+    elif event_key == pygame.K_r:
+        calculator_obj.randomise()
 
     calculator_obj.text_obj.reload()
     calculator_obj.text_obj.push_right(8)
 
     calculator_obj.calculate_value()
-
-    print(f"buffer: {calculator_obj.buffer}")
 
 
 def key_unifier(event_key):
@@ -411,18 +532,18 @@ calculator_window = window.Window(569, 295, DOUBLEBUF, bg_colour, "macOS Calcula
 ###
 number_surface = window.Surface(calculator_window, 342, 104, 170, 191, bg_colour)
 
-button_1 = ui_elements.LabelledButton(number_surface, 0, 96, 56, 47, button_colour_light, 49, button_colour_glowing, "1", text_colour, assets.SF_Pro_Medium_24)
-button_2 = ui_elements.LabelledButton(number_surface, 57, 96, 56, 47, button_colour_light, 50, button_colour_glowing, "2", text_colour, assets.SF_Pro_Medium_24)
-button_3 = ui_elements.LabelledButton(number_surface, 114, 96, 56, 47, button_colour_light, 51, button_colour_glowing, "3", text_colour, assets.SF_Pro_Medium_24)
-button_4 = ui_elements.LabelledButton(number_surface, 0, 48, 56, 47, button_colour_light, 52, button_colour_glowing, "4", text_colour, assets.SF_Pro_Medium_24)
-button_5 = ui_elements.LabelledButton(number_surface, 57, 48, 56, 47, button_colour_light, 53, button_colour_glowing, "5", text_colour, assets.SF_Pro_Medium_24)
-button_6 = ui_elements.LabelledButton(number_surface, 114, 48, 56, 47, button_colour_light, 54, button_colour_glowing, "6", text_colour, assets.SF_Pro_Medium_24)
-button_7 = ui_elements.LabelledButton(number_surface, 0, 0, 56, 47, button_colour_light, 55, button_colour_glowing, "7", text_colour, assets.SF_Pro_Medium_24)
-button_8 = ui_elements.LabelledButton(number_surface, 57, 0, 56, 47, button_colour_light, 56, button_colour_glowing, "8", text_colour, assets.SF_Pro_Medium_24)
-button_9 = ui_elements.LabelledButton(number_surface, 114, 0, 56, 47, button_colour_light, 57, button_colour_glowing, "9", text_colour, assets.SF_Pro_Medium_24)
-button_0 = ui_elements.LabelledButton(number_surface, 0, 144, 113, 47, button_colour_light, 48, button_colour_glowing, "0", text_colour, assets.SF_Pro_Medium_24)
+button_1 = ui_elements.LabelledButton(number_surface, 0, 96, 56, 47, button_colour_light, pygame.K_1, button_colour_glowing, "1", text_colour, assets.SF_Pro_Medium_24)
+button_2 = ui_elements.LabelledButton(number_surface, 57, 96, 56, 47, button_colour_light, pygame.K_2, button_colour_glowing, "2", text_colour, assets.SF_Pro_Medium_24)
+button_3 = ui_elements.LabelledButton(number_surface, 114, 96, 56, 47, button_colour_light, pygame.K_3, button_colour_glowing, "3", text_colour, assets.SF_Pro_Medium_24)
+button_4 = ui_elements.LabelledButton(number_surface, 0, 48, 56, 47, button_colour_light, pygame.K_4, button_colour_glowing, "4", text_colour, assets.SF_Pro_Medium_24)
+button_5 = ui_elements.LabelledButton(number_surface, 57, 48, 56, 47, button_colour_light, pygame.K_5, button_colour_glowing, "5", text_colour, assets.SF_Pro_Medium_24)
+button_6 = ui_elements.LabelledButton(number_surface, 114, 48, 56, 47, button_colour_light, pygame.K_6, button_colour_glowing, "6", text_colour, assets.SF_Pro_Medium_24)
+button_7 = ui_elements.LabelledButton(number_surface, 0, 0, 56, 47, button_colour_light, pygame.K_7, button_colour_glowing, "7", text_colour, assets.SF_Pro_Medium_24)
+button_8 = ui_elements.LabelledButton(number_surface, 57, 0, 56, 47, button_colour_light, pygame.K_8, button_colour_glowing, "8", text_colour, assets.SF_Pro_Medium_24)
+button_9 = ui_elements.LabelledButton(number_surface, 114, 0, 56, 47, button_colour_light, pygame.K_9, button_colour_glowing, "9", text_colour, assets.SF_Pro_Medium_24)
+button_0 = ui_elements.LabelledButton(number_surface, 0, 144, 113, 47, button_colour_light, pygame.K_0, button_colour_glowing, "0", text_colour, assets.SF_Pro_Medium_24)
 
-button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button_colour_light, 44, button_colour_glowing, ".", text_colour, assets.SF_Pro_Medium_24)
+button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button_colour_light, pygame.K_COMMA, button_colour_glowing, ".", text_colour, assets.SF_Pro_Medium_24)
 
 
 ###
@@ -438,29 +559,49 @@ button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orang
 ###
 top_gray_surface = window.Surface(calculator_window, 342, 56, 170, 47, bg_colour)
 
-button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, 27, button_colour_light, "C", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, pygame.K_ESCAPE, button_colour_light, "C", text_colour, assets.SF_Pro_Medium_20, 0.5)
 button_negate = ui_elements.LabelledButton(top_gray_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_BACKSLASH, button_colour_light, "⁺⁄₋", text_colour, assets.SF_Pro_Medium_20)
-button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, 37, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
+button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, pygame.K_PERCENT, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
 
 
 ###
 scientific_surface = window.Surface(calculator_window, 0, 56, 342, 239, bg_colour)
 
-button_deg = ui_elements.LabelledButton(scientific_surface, 0, 192, 56, 47, button_colour_dark, pygame.K_d, button_colour_light, "Rad", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_deg = ui_elements.LabelledButton(scientific_surface, 0, 192, 56, 47, button_colour_dark, pygame.K_m, button_colour_light, "Rad", text_colour, assets.SF_Pro_Medium_20, 0.5)
 button_sinh = ui_elements.LabelledButton(scientific_surface, 57, 192, 56, 47, button_colour_dark, pygame.K_s, button_colour_light, "sinh", text_colour, assets.SF_Pro_Medium_20, True)
-button_cosh = ui_elements.LabelledButton(scientific_surface, 114, 192, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "cosh", text_colour, assets.SF_Pro_Medium_20, True)
+button_cosh = ui_elements.LabelledButton(scientific_surface, 114, 192, 56, 47, button_colour_dark, pygame.K_k, button_colour_light, "cosh", text_colour, assets.SF_Pro_Medium_20, True)
 button_tanh = ui_elements.LabelledButton(scientific_surface, 171, 192, 56, 47, button_colour_dark, pygame.K_t, button_colour_light, "tanh", text_colour, assets.SF_Pro_Medium_20, True)
-button_e = ui_elements.LabelledButton(scientific_surface, 228, 192, 56, 47, button_colour_dark, pygame.K_e, button_colour_light, "e", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_e = ui_elements.LabelledButton(scientific_surface, 228, 192, 56, 47, button_colour_dark, pygame.K_e, button_colour_light, "e", text_colour, assets.SF_Pro_Medium_20, False)
 button_ln = ui_elements.LabelledButton(scientific_surface, 285, 192, 56, 47, button_colour_dark, pygame.K_l, button_colour_light, "ln", text_colour, assets.SF_Pro_Medium_20, True)
 
 button_factorial = ui_elements.LabelledButton(scientific_surface, 0, 144, 56, 47, button_colour_dark, pygame.K_1, button_colour_light, "x!", text_colour, assets.SF_Pro_Medium_20, True)
 button_sin = ui_elements.LabelledButton(scientific_surface, 57, 144, 56, 47, button_colour_dark, pygame.K_s, button_colour_light, "sin", text_colour, assets.SF_Pro_Medium_20, False)
-button_cos = ui_elements.LabelledButton(scientific_surface, 114, 144, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "cos", text_colour, assets.SF_Pro_Medium_20, False)
+button_cos = ui_elements.LabelledButton(scientific_surface, 114, 144, 56, 47, button_colour_dark, pygame.K_k, button_colour_light, "cos", text_colour, assets.SF_Pro_Medium_20, False)
 button_tan = ui_elements.LabelledButton(scientific_surface, 171, 144, 56, 47, button_colour_dark, pygame.K_t, button_colour_light, "tan", text_colour, assets.SF_Pro_Medium_20, False)
-button_pi = ui_elements.LabelledButton(scientific_surface, 228, 144, 56, 47, button_colour_dark, pygame.K_p, button_colour_light, "π", text_colour, assets.SF_Pro_Medium_20, 0.5)
-button_log = ui_elements.LabelledButton(scientific_surface, 285, 144, 56, 47, button_colour_dark, pygame.K_l, button_colour_light, "log", text_colour, assets.SF_Pro_Medium_20, False)
+button_pi = ui_elements.LabelledButton(scientific_surface, 228, 144, 56, 47, button_colour_dark, pygame.K_p, button_colour_light, "π", text_colour, assets.SF_Pro_Medium_20, False)
+button_log10 = ui_elements.LabelledButton(scientific_surface, 285, 144, 56, 47, button_colour_dark, pygame.K_l, button_colour_light, "log₁₀", text_colour, assets.SF_Pro_Medium_20, False)
+
+button_inverse = ui_elements.LabelledButton(scientific_surface, 0, 96, 56, 47, button_colour_dark, pygame.K_i, button_colour_light, "x⁻¹", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_square_root = ui_elements.LabelledButton(scientific_surface, 57, 96, 56, 47, button_colour_dark, pygame.K_b, button_colour_light, "√x", text_colour, assets.SF_Pro_Medium_20, True)
+button_cubic_root = ui_elements.LabelledButton(scientific_surface, 114, 96, 56, 47, button_colour_dark, pygame.K_q, button_colour_light, "³√x", text_colour, assets.SF_Pro_Medium_20, True)
+button_squared = ui_elements.LabelledButton(scientific_surface, 171, 96, 56, 47, button_colour_dark, pygame.K_b, button_colour_light, "x²", text_colour, assets.SF_Pro_Medium_20, False)
+button_cubed = ui_elements.LabelledButton(scientific_surface, 228, 96, 56, 47, button_colour_dark, pygame.K_q, button_colour_light, "x³", text_colour, assets.SF_Pro_Medium_20, False)
+button_e_to_x = ui_elements.LabelledButton(scientific_surface, 285, 96, 56, 47, button_colour_dark, pygame.K_e, button_colour_light, "e^x", text_colour, assets.SF_Pro_Medium_20, True)
+
+button_10_to_x = ui_elements.LabelledButton(scientific_surface, 285, 48, 56, 47, button_colour_dark, pygame.K_p, button_colour_light, "10^x", text_colour, assets.SF_Pro_Medium_18, True)
+button_50_50 = ui_elements.LabelledButton(scientific_surface, 0, 48, 56, 47, button_colour_dark, pygame.K_f, button_colour_light, "50/50", text_colour, assets.SF_Pro_Medium_18, 0.5)
+button_ax2_value = ui_elements.LabelledButton(scientific_surface, 57, 48, 56, 47, button_colour_dark, pygame.K_a, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_20, True)
+button_bx_value = ui_elements.LabelledButton(scientific_surface, 114, 48, 56, 47, button_colour_dark, pygame.K_b, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_20, True)
+button_c_value = ui_elements.LabelledButton(scientific_surface, 171, 48, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_20, True)
+button_first_result = ui_elements.LabelledButton(scientific_surface, 228, 48, 56, 47, button_colour_dark, 0, button_colour_dark, "", button_colour_light, assets.SF_Pro_Medium_20, 0.5)
 
 
+button_random = ui_elements.LabelledButton(scientific_surface, 0, 0, 56, 47, button_colour_dark, pygame.K_r, button_colour_light, "Rand", text_colour, assets.SF_Pro_Medium_18, 0.5)
+button_ax2 = ui_elements.LabelledButton(scientific_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_a, button_colour_light, "ax²", text_colour, assets.SF_Pro_Medium_20, False)
+button_bx = ui_elements.LabelledButton(scientific_surface, 114, 0, 56, 47, button_colour_dark, pygame.K_b, button_colour_light, "bx", text_colour, assets.SF_Pro_Medium_20, False)
+button_c = ui_elements.LabelledButton(scientific_surface, 171, 0, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "c", text_colour, assets.SF_Pro_Medium_20, False)
+button_second_result = ui_elements.LabelledButton(scientific_surface, 228, 0, 56, 47, button_colour_dark, 0, button_colour_dark, "", button_colour_light, assets.SF_Pro_Medium_20, 0.5)
+button_graph = ui_elements.LabelledButton(scientific_surface, 285, 0, 56, 47, button_colour_dark, pygame.K_g, button_colour_light, "Graph", text_colour, assets.SF_Pro_Medium_18, 0.5)
 
 
 ###
