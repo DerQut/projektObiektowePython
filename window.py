@@ -76,7 +76,7 @@ class Window:
                     self.is_shifting = True
                 event.key = program.key_unifier(event.key)
 
-                program.button_handler(event.key, self.is_shifting)
+                program.button_handler(event.key, 0.5, self.is_shifting)
 
                 if self.is_shifting:
                     event.key = program.key_separator(event.key)
@@ -91,7 +91,7 @@ class Window:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = False
-                    program.button_handler(event.key, self.is_shifting)
+                    program.button_handler(event.key, 0.5, self.is_shifting)
 
                 event.key = program.key_unifier(event.key)
 
@@ -129,7 +129,7 @@ class Window:
 
                     if element.type == "Button" or element.type == "LabelledButton":
                         if element.mouse_check(mouse_pos) and self.is_clicking:
-                            program.button_handler(element.unicode_id, self.is_shifting)
+                            program.button_handler(element.unicode_id, element.needs_shift, element.needs_shift)
                             element.colour = element.secondary_colour
 
     def mouse_button_up_handler(self, event):

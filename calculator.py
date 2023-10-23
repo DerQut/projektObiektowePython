@@ -27,7 +27,7 @@ class Calc:
         self.has_comma = False
         self.is_negative = False
 
-        self.uses_radians = True
+        self.uses_radians = False
 
         self.last_operator = ""
         self.operation_buffer = 0
@@ -143,16 +143,42 @@ class Calc:
         self.crop_buffer()
 
     def sin(self):
-        self.value = math.sin(self.value)
-        self.intify()
-        self.text_obj.text = str(self.value)
-        self.crop()
+        if self.uses_radians:
+            self.value = math.sin(self.value)
+        else:
+            self.value = math.sin(self.value / 180 * math.pi)
+        self.simplify()
+
+    def sinh(self):
+        self.value = math.sinh(self.value)
+        self.simplify()
 
     def cos(self):
-        self.value = math.cos(self.value)
-        self.intify()
-        self.text_obj.text = str(self.value)
-        self.crop()
+        if self.uses_radians:
+            self.value = math.cos(self.value)
+        else:
+            self.value = math.cos(self.value / 180 * math.pi)
+        self.simplify()
+
+    def cosh(self):
+        if self.uses_radians:
+            self.value = math.cosh(self.value)
+        else:
+            self.value = math.cosh(self.value * math.pi / 180)
+        self.simplify()
+
+    def tan(self):
+        self.value = math.tan(self.value)
+        self.simplify()
+
+    def tanh(self):
+        self.value = math.tanh(self.value)
+        self.simplify()
+
+    def pi(self):
+        self.value = self.value * math.pi
+        self.simplify()
+
 
     def equals(self):
 
@@ -178,14 +204,12 @@ class Calc:
             self.is_negative = True
         else:
             self.is_negative = False
-        self.intify()
-        self.text_obj.text = str(self.value)
-        self.crop()
+        self.simplify()
 
     def crop(self):
         if len(self.text_obj.text) - self.has_comma - self.is_negative > self.max_length:
             if self.has_comma:
-                self.text_obj.text = "{:.4f}".format(float(self.text_obj.text))
+                self.text_obj.text = "{:.8f}".format(float(self.text_obj.text))
                 if float(self.text_obj.text) == int(float(self.text_obj.text)):
                     self.text_obj.text = str(int(float(self.text_obj.text)))
                     self.has_comma = False
@@ -211,11 +235,19 @@ class Calc:
             self.has_comma = True
             print("not inted")
 
+    def simplify(self):
+        self.intify()
+        self.text_obj.text = str(self.value)
+        self.crop()
 
-def button_handler(event_key, is_shifting):
+
+def button_handler(event_key, needs_shift, is_shifting):
 
     print(event_key)
     print(pygame.K_EQUALS)
+
+    if (needs_shift != is_shifting) and (needs_shift != 0.5):
+        return
 
     if pygame.K_0 <= event_key <= pygame.K_9 and not is_shifting:
         calculator_obj.change_display_value(event_key-48)
@@ -257,11 +289,35 @@ def button_handler(event_key, is_shifting):
     elif event_key == pygame.K_BACKSLASH:
         calculator_obj.change_sign()
 
-    elif event_key == pygame.K_s and not is_shifting:
-        calculator_obj.sin()
+    elif event_key == pygame.K_s:
+        if not is_shifting:
+            calculator_obj.sin()
+        else:
+            calculator_obj.sinh()
 
-    elif event_key == pygame.K_c and not is_shifting:
-        calculator_obj.cos()
+    elif event_key == pygame.K_c:
+        if not is_shifting:
+            calculator_obj.cos()
+        else:
+            calculator_obj.cosh()
+
+    elif event_key == pygame.K_t:
+        if not is_shifting:
+            calculator_obj.tan()
+        else:
+            calculator_obj.tanh()
+
+    elif event_key == pygame.K_p:
+        calculator_obj.pi()
+
+    elif event_key == pygame.K_d:
+        if calculator_obj.uses_radians:
+            button_deg.label.change_text("Rad")
+            calculator_obj.uses_radians = False
+        else:
+            button_deg.label.change_text("Deg")
+            calculator_obj.uses_radians = True
+        button_deg.center_text()
 
     elif event_key == K_LSHIFT:
         if is_shifting:
@@ -347,7 +403,7 @@ button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, bu
 ###
 scientific_surface = window.Surface(calculator_window, 0, 56, 342, 239, bg_colour)
 
-button_deg = ui_elements.LabelledButton(scientific_surface, 0, 192, 56, 47, button_colour_dark, pygame.K_d, button_colour_light, "Deg", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_deg = ui_elements.LabelledButton(scientific_surface, 0, 192, 56, 47, button_colour_dark, pygame.K_d, button_colour_light, "Rad", text_colour, assets.SF_Pro_Medium_20, 0.5)
 button_sinh = ui_elements.LabelledButton(scientific_surface, 57, 192, 56, 47, button_colour_dark, pygame.K_s, button_colour_light, "sinh", text_colour, assets.SF_Pro_Medium_20, True)
 button_cosh = ui_elements.LabelledButton(scientific_surface, 114, 192, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "cosh", text_colour, assets.SF_Pro_Medium_20, True)
 button_tanh = ui_elements.LabelledButton(scientific_surface, 171, 192, 56, 47, button_colour_dark, pygame.K_t, button_colour_light, "tanh", text_colour, assets.SF_Pro_Medium_20, True)
