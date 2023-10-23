@@ -236,15 +236,19 @@ def button_handler(event_key, is_shifting):
         calculator_obj.divide_by_100()
 
     elif event_key == pygame.K_PLUS or (event_key == pygame.K_EQUALS and is_shifting):
+        calculator_obj.equals()
         calculator_obj.add()
 
     elif event_key == pygame.K_MINUS and not is_shifting:
+        calculator_obj.equals()
         calculator_obj.subtract()
 
     elif event_key == pygame.K_ASTERISK or (event_key == pygame.K_8 and is_shifting):
+        calculator_obj.equals()
         calculator_obj.multiply()
 
     elif event_key == pygame.K_SLASH:
+        calculator_obj.equals()
         calculator_obj.divide()
 
     elif event_key == pygame.K_EQUALS or (event_key == pygame.K_PLUS and is_shifting):
