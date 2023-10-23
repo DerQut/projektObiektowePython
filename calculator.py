@@ -27,6 +27,8 @@ class Calc:
         self.has_comma = False
         self.is_negative = False
 
+        self.uses_radians = True
+
         self.last_operator = ""
         self.operation_buffer = 0
 
@@ -251,10 +253,10 @@ def button_handler(event_key, is_shifting):
     elif event_key == pygame.K_BACKSLASH:
         calculator_obj.change_sign()
 
-    elif event_key == pygame.K_s:
+    elif event_key == pygame.K_s and not is_shifting:
         calculator_obj.sin()
 
-    elif event_key == pygame.K_c:
+    elif event_key == pygame.K_c and not is_shifting:
         calculator_obj.cos()
 
     elif event_key == K_LSHIFT:
@@ -300,9 +302,11 @@ dark_orange = (190, 106, 10)
 text_colour = (255, 255, 255)
 
 
-calculator_window = window.Window(227, 295, DOUBLEBUF, bg_colour, "macOS Calculator")
+calculator_window = window.Window(569, 295, DOUBLEBUF, bg_colour, "macOS Calculator")
 
-number_surface = window.Surface(calculator_window, 0, 104, 170, 191, bg_colour)
+
+###
+number_surface = window.Surface(calculator_window, 342, 104, 170, 191, bg_colour)
 
 button_1 = ui_elements.LabelledButton(number_surface, 0, 96, 56, 47, button_colour_light, 49, button_colour_glowing, "1", text_colour, assets.SF_Pro_Medium_24)
 button_2 = ui_elements.LabelledButton(number_surface, 57, 96, 56, 47, button_colour_light, 50, button_colour_glowing, "2", text_colour, assets.SF_Pro_Medium_24)
@@ -318,7 +322,8 @@ button_0 = ui_elements.LabelledButton(number_surface, 0, 144, 113, 47, button_co
 button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button_colour_light, 44, button_colour_glowing, ".", text_colour, assets.SF_Pro_Medium_24)
 
 
-orange_surface = window.Surface(calculator_window, 171, 56, 56, 239, bg_colour)
+###
+orange_surface = window.Surface(calculator_window, 171+342, 56, 56, 239, bg_colour)
 
 button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, pygame.K_SLASH, dark_orange, "÷", text_colour, assets.SF_Pro_Medium_24)
 button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, pygame.K_ASTERISK, dark_orange, "×", text_colour, assets.SF_Pro_Medium_24, True)
@@ -327,13 +332,25 @@ button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, 
 button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, pygame.K_EQUALS, dark_orange, "=", text_colour, assets.SF_Pro_Medium_24)
 
 
-top_gray_surface = window.Surface(calculator_window, 0, 56, 170, 47, bg_colour)
+###
+top_gray_surface = window.Surface(calculator_window, 342, 56, 170, 47, bg_colour)
 
 button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, 27, button_colour_light, "C", text_colour, assets.SF_Pro_Medium_20, 0.5)
 button_negate = ui_elements.LabelledButton(top_gray_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_BACKSLASH, button_colour_light, "⁺⁄₋", text_colour, assets.SF_Pro_Medium_20)
 button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, 37, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
 
 
-top_display_surface = window.Surface(calculator_window, 0, 0, 227, 56, bg_colour)
+###
+scientific_surface = window.Surface(calculator_window, 0, 56, 342, 239, bg_colour)
 
-calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 8)
+button_deg = ui_elements.LabelledButton(scientific_surface, 0, 192, 56, 47, button_colour_dark, pygame.K_d, button_colour_light, "Deg", text_colour, assets.SF_Pro_Medium_20, 0.5)
+button_sinh = ui_elements.LabelledButton(scientific_surface, 57, 192, 56, 47, button_colour_dark, pygame.K_s, button_colour_light, "sinh", text_colour, assets.SF_Pro_Medium_20, True)
+button_cosh = ui_elements.LabelledButton(scientific_surface, 114, 192, 56, 47, button_colour_dark, pygame.K_c, button_colour_light, "cosh", text_colour, assets.SF_Pro_Medium_20, True)
+button_tanh = ui_elements.LabelledButton(scientific_surface, 171, 192, 56, 47, button_colour_dark, pygame.K_t, button_colour_light, "tanh", text_colour, assets.SF_Pro_Medium_20, True)
+button_pi = ui_elements.LabelledButton(scientific_surface, 228, 192, 56, 47, button_colour_dark, pygame.K_p, button_colour_light, "π", text_colour, assets.SF_Pro_Medium_20, 0.5)
+
+
+###
+top_display_surface = window.Surface(calculator_window, 0, 0, 227+342, 56, bg_colour)
+
+calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 22)
