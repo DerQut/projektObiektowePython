@@ -74,12 +74,8 @@ class Window:
 
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = True
-                event.key = program.key_unifier(event.key)
 
                 program.button_handler(event.key, 0.5, self.is_shifting)
-
-                if self.is_shifting:
-                    event.key = program.key_separator(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:
@@ -92,16 +88,6 @@ class Window:
                 if event.key == pygame.K_LSHIFT:
                     self.is_shifting = False
                     program.button_handler(event.key, 0.5, self.is_shifting)
-
-                event.key = program.key_unifier(event.key)
-
-                for surface in self.surfaces:
-                    for element in surface.elements:
-                        if element.type == "Button" or element.type == "LabelledButton":
-                            if element.unicode_id == event.key:
-                                element.colour = element.main_colour
-
-                event.key = program.key_separator(event.key)
 
                 for surface in self.surfaces:
                     for element in surface.elements:

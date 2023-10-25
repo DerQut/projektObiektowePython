@@ -314,12 +314,15 @@ class Calc:
 
 def button_handler(event_key, needs_shift, is_shifting):
 
+    # Check
     if (needs_shift != is_shifting) and (needs_shift != 0.5):
         return
 
+    # Number input
     if pygame.K_0 <= event_key <= pygame.K_9 and not is_shifting:
         calculator_obj.change_display_value(event_key-48)
 
+    # Clear
     elif event_key == pygame.K_ESCAPE:
         if not is_shifting:
             calculator_obj.soft_clear()
@@ -339,16 +342,21 @@ def button_handler(event_key, needs_shift, is_shifting):
             button_c_value.label.change_text("0")
             button_c_value.center_text()
 
+    # Useful buttons
     elif event_key == pygame.K_COMMA:
         calculator_obj.add_comma()
 
     elif event_key == pygame.K_BACKSPACE:
         calculator_obj.backspace()
 
-    elif event_key == pygame.K_5 and is_shifting or event_key == pygame.K_PERCENT:
+    elif event_key == pygame.K_BACKSLASH:
+        calculator_obj.change_sign()
+
+    elif event_key == pygame.K_5 and is_shifting:
         calculator_obj.divide_by_100()
 
-    elif event_key == pygame.K_PLUS or (event_key == pygame.K_EQUALS and is_shifting):
+    # Basic operations
+    elif event_key == pygame.K_EQUALS and is_shifting:
         calculator_obj.equals()
         calculator_obj.add()
 
@@ -356,7 +364,7 @@ def button_handler(event_key, needs_shift, is_shifting):
         calculator_obj.equals()
         calculator_obj.subtract()
 
-    elif event_key == pygame.K_ASTERISK or (event_key == pygame.K_8 and is_shifting):
+    elif event_key == pygame.K_8 and is_shifting:
         calculator_obj.equals()
         calculator_obj.multiply()
 
@@ -364,11 +372,8 @@ def button_handler(event_key, needs_shift, is_shifting):
         calculator_obj.equals()
         calculator_obj.divide()
 
-    elif event_key == pygame.K_EQUALS or (event_key == pygame.K_PLUS and is_shifting):
+    elif (event_key == pygame.K_EQUALS and not is_shifting) or event_key == pygame.K_RETURN:
         calculator_obj.equals()
-
-    elif event_key == pygame.K_BACKSLASH:
-        calculator_obj.change_sign()
 
     # trigonometric functions
     elif event_key == pygame.K_s:
@@ -393,9 +398,6 @@ def button_handler(event_key, needs_shift, is_shifting):
     elif event_key == pygame.K_p and not is_shifting:
         calculator_obj.pi()
 
-    elif event_key == pygame.K_f:
-        calculator_obj.coin_flip()
-
     elif event_key == pygame.K_e:
         if not is_shifting:
             calculator_obj.e()
@@ -409,6 +411,28 @@ def button_handler(event_key, needs_shift, is_shifting):
         else:
             calculator_obj.log()
 
+    # Powers and roots
+    elif event_key == pygame.K_2 and is_shifting:
+        calculator_obj.square()
+
+    elif event_key == pygame.K_3 and is_shifting:
+        calculator_obj.cube()
+
+    elif event_key == pygame.K_r:
+        if is_shifting:
+            calculator_obj.cubic_root()
+        else:
+            calculator_obj.square_root()
+
+    elif event_key == pygame.K_0 and is_shifting:
+        calculator_obj.ten_to_x()
+
+    elif event_key == pygame.K_1 and is_shifting:
+        calculator_obj.factorial()
+
+    elif event_key == pygame.K_i:
+        calculator_obj.inverse()
+
     # Rad/Deg button
     elif event_key == pygame.K_m:
         if calculator_obj.uses_radians:
@@ -419,24 +443,7 @@ def button_handler(event_key, needs_shift, is_shifting):
             calculator_obj.uses_radians = True
         button_deg.center_text()
 
-    elif event_key == pygame.K_1 and is_shifting:
-        calculator_obj.factorial()
-
-    elif event_key == pygame.K_i:
-        calculator_obj.inverse()
-
-    elif event_key == pygame.K_2 and is_shifting:
-        calculator_obj.square()
-
-    elif event_key == pygame.K_r:
-        if is_shifting:
-            calculator_obj.cubic_root()
-        else:
-            calculator_obj.square_root()
-
-    elif event_key == pygame.K_3 and is_shifting:
-        calculator_obj.cube()
-
+    # ax^2 + bx + c
     elif event_key == pygame.K_a:
         button_ax2_value.center_text()
         if is_shifting:
@@ -449,7 +456,6 @@ def button_handler(event_key, needs_shift, is_shifting):
         button_ax2_value.label.text = "{:.2f}".format(calculator_obj.ax2)
         button_ax2_value.label.reload()
         button_ax2_value.center_text()
-
 
     elif event_key == pygame.K_b:
         button_bx_value.center_text()
@@ -477,7 +483,14 @@ def button_handler(event_key, needs_shift, is_shifting):
         button_c_value.label.reload()
         button_c_value.center_text()
 
+    # Useless shit
+    elif event_key == pygame.K_f:
+        calculator_obj.coin_flip()
 
+    elif event_key == pygame.K_F1:
+        calculator_obj.randomise()
+
+    # Change buttons appearance depending on L_SHIFT input
     elif event_key == K_LSHIFT:
         if is_shifting:
             button_clear.label.change_text("AC")
@@ -485,33 +498,10 @@ def button_handler(event_key, needs_shift, is_shifting):
             button_clear.label.change_text("C")
         button_clear.center_text()
 
-    elif event_key == pygame.K_0 and is_shifting:
-        print(10)
-        calculator_obj.ten_to_x()
-
-    elif event_key == pygame.K_F1:
-        calculator_obj.randomise()
-
     calculator_obj.text_obj.reload()
     calculator_obj.text_obj.push_right(8)
 
     calculator_obj.calculate_value()
-
-
-def key_unifier(event_key):
-    if event_key == pygame.K_PERIOD:
-        return pygame.K_COMMA
-    elif event_key == pygame.K_RETURN:
-        return pygame.K_EQUALS
-    return event_key
-
-
-def key_separator(event_key):
-    if event_key == pygame.K_5:
-        return pygame.K_PERCENT
-    if event_key == pygame.K_8:
-        return pygame.K_ASTERISK
-    return event_key
 
 
 bg_colour = (43, 34, 34)
@@ -550,10 +540,10 @@ button_dot = ui_elements.LabelledButton(number_surface, 114, 144, 56, 47, button
 orange_surface = window.Surface(calculator_window, 171+342, 56, 56, 239, bg_colour)
 
 button_divide = ui_elements.LabelledButton(orange_surface, 0, 0, 56, 47, orange, pygame.K_SLASH, dark_orange, "÷", text_colour, assets.SF_Pro_Medium_24)
-button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, pygame.K_ASTERISK, dark_orange, "×", text_colour, assets.SF_Pro_Medium_24, True)
+button_multiply = ui_elements.LabelledButton(orange_surface, 0, 48, 56, 47, orange, pygame.K_8, dark_orange, "×", text_colour, assets.SF_Pro_Medium_24, True)
 button_subtract = ui_elements.LabelledButton(orange_surface, 0, 96, 56, 47, orange, pygame.K_MINUS, dark_orange, "−", text_colour, assets.SF_Pro_Medium_24)
-button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, pygame.K_PLUS, dark_orange, "+", text_colour, assets.SF_Pro_Medium_24, True)
-button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, pygame.K_EQUALS, dark_orange, "=", text_colour, assets.SF_Pro_Medium_24)
+button_add = ui_elements.LabelledButton(orange_surface, 0, 144, 56, 47, orange, pygame.K_EQUALS, dark_orange, "+", text_colour, assets.SF_Pro_Medium_24, True)
+button_equals = ui_elements.LabelledButton(orange_surface, 0, 192, 56, 47, orange, pygame.K_EQUALS, dark_orange, "=", text_colour, assets.SF_Pro_Medium_24, False)
 
 
 ###
@@ -561,7 +551,7 @@ top_gray_surface = window.Surface(calculator_window, 342, 56, 170, 47, bg_colour
 
 button_clear = ui_elements.LabelledButton(top_gray_surface, 0, 0, 56, 47, button_colour_dark, pygame.K_ESCAPE, button_colour_light, "C", text_colour, assets.SF_Pro_Medium_20, 0.5)
 button_negate = ui_elements.LabelledButton(top_gray_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_BACKSLASH, button_colour_light, "⁺⁄₋", text_colour, assets.SF_Pro_Medium_20)
-button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, pygame.K_PERCENT, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
+button_percent = ui_elements.LabelledButton(top_gray_surface, 114, 0, 56, 47, button_colour_dark, pygame.K_5, button_colour_light, "%", text_colour, assets.SF_Pro_Medium_20, True)
 
 
 ###
