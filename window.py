@@ -97,6 +97,8 @@ class Window:
 
     def run(self):
 
+        program.loop_action()
+
         self.screen.fill(self.bg_colour)
 
         for surface in self.surfaces:
