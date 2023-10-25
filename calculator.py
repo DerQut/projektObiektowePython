@@ -1,6 +1,7 @@
 import math
 import random
 
+import numpy
 import pygame
 from pygame.locals import *
 
@@ -228,12 +229,12 @@ class Calc:
         self.value = random.uniform(0, 1)
         self.simplify()
 
-    def coin_flip(self):
-        self.value = random.uniform(0, 1)
-        if self.value < 0.5:
-            self.value = 0
+    def round(self):
+        print(abs(self.value) - int(abs(self.value)))
+        if abs(self.value) - int(abs(self.value)) >= 0.5:
+            self.value = int(self.value) + numpy.sign(self.value)
         else:
-            self.value = 1
+            self.value = int(self.value)
         self.simplify()
 
     def inverse(self):
@@ -499,8 +500,8 @@ def button_handler(event_key, needs_shift, is_shifting):
         button_c_value.center_text()
 
     # Useless shit
-    elif event_key == pygame.K_f:
-        calculator_obj.coin_flip()
+    elif event_key == pygame.K_z:
+        calculator_obj.round()
 
     elif event_key == pygame.K_q:
         calculator_obj.randomise()
@@ -603,7 +604,7 @@ button_cubed = ui_elements.LabelledButton(scientific_surface, 228, 96, 56, 47, b
 button_e_to_x = ui_elements.LabelledButton(scientific_surface, 285, 96, 56, 47, button_colour_dark, pygame.K_e, button_colour_light, "e^x", text_colour, assets.SF_Pro_Medium_20, True)
 
 button_10_to_x = ui_elements.LabelledButton(scientific_surface, 285, 48, 56, 47, button_colour_dark, pygame.K_0, button_colour_light, "10^x", text_colour, assets.SF_Pro_Medium_18, True)
-button_50_50 = ui_elements.LabelledButton(scientific_surface, 0, 48, 56, 47, button_colour_dark, pygame.K_f, button_colour_light, "50/50", text_colour, assets.SF_Pro_Medium_18, 0.5)
+button_round = ui_elements.LabelledButton(scientific_surface, 0, 48, 56, 47, button_colour_dark, pygame.K_z, button_colour_light, "int()", text_colour, assets.SF_Pro_Medium_18, 0.5)
 button_ax2_value = ui_elements.LabelledButton(scientific_surface, 57, 48, 56, 47, button_colour_dark, pygame.K_F1, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_18, True)
 button_bx_value = ui_elements.LabelledButton(scientific_surface, 114, 48, 56, 47, button_colour_dark, pygame.K_F2, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_18, True)
 button_c_value = ui_elements.LabelledButton(scientific_surface, 171, 48, 56, 47, button_colour_dark, pygame.K_F3, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_18, True)
