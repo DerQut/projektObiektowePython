@@ -321,6 +321,10 @@ class Calc:
         self.crop()
 
     def quadratic(self):
+
+        self.x1 = 0
+        self.x2 = 0
+
         delta = self.bx**2 - 4*self.ax2*self.c
 
         if delta >= 0 and self.ax2:
