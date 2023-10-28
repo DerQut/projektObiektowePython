@@ -7,6 +7,7 @@ from pygame.locals import *
 
 import window
 import ui_elements
+import graph
 
 import assets
 
@@ -533,6 +534,8 @@ def loop_action():
     button_first_result.center_text()
 
 
+
+
 bg_colour = (43, 34, 34)
 
 button_colour_glowing = (150, 147, 147)
@@ -545,7 +548,7 @@ dark_orange = (190, 106, 10)
 text_colour = (255, 255, 255)
 
 
-calculator_window = window.Window(569, 295, DOUBLEBUF, bg_colour, "macOS Calculator")
+calculator_window = window.Window(569+480, 295, DOUBLEBUF, bg_colour, "macOS Calculator")
 
 
 ###
@@ -623,6 +626,11 @@ button_graph = ui_elements.LabelledButton(scientific_surface, 285, 0, 56, 47, bu
 
 
 ###
-top_display_surface = window.Surface(calculator_window, 0, 0, 227+342, 56, bg_colour)
+top_display_surface = window.Surface(calculator_window, 0, 0, 569, 56, bg_colour)
 
+
+###
+graphing_surface = graph.GraphingSurface(calculator_window, 570, 0, 480, 295, (31, 22, 22), text_colour, 5)
+
+###
 calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 22)
