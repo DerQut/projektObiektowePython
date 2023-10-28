@@ -64,6 +64,9 @@ class GraphingSurface(window.Surface):
 
         self.last_function = "sin"
 
+        self.y_unit = 50
+        self.x_unit = 50
+
         conversion_multiplier = 1
         if not uses_radians:
             conversion_multiplier = math.pi/180
@@ -83,6 +86,9 @@ class GraphingSurface(window.Surface):
 
         self.last_function = "cos"
 
+        self.x_unit = 50
+        self.y_unit = 50
+
         conversion_multiplier = 1
         if not uses_radians:
             conversion_multiplier = math.pi / 180
@@ -98,7 +104,30 @@ class GraphingSurface(window.Surface):
         self.highlights.append((self.zero_point[0] + angles * self.x_unit,
                                 self.zero_point[1] - self.y_unit * math.cos(angles * conversion_multiplier)))
 
+    def draw_tangent(self, angles, uses_radians):
+
+        self.clear()
+
+        self.last_function = "tan"
+
+        self.x_unit = 75
+        self.y_unit = 75
+
+        conversion_multiplier = 1
+        if not uses_radians:
+            conversion_multiplier = math.pi / 180
+
+        self.x_unit = self.x_unit * conversion_multiplier
+
+        i = -0.6 * self.x_size
+        while i * self.x_unit <= 0.5 * self.x_size:
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.tan(i * conversion_multiplier)))
+            i = i + 0.01
+
+        self.highlights.append((self.zero_point[0] + angles * self.x_unit, self.zero_point[1] - self.y_unit * math.tan(angles * conversion_multiplier)))
+
     def draw_sinh(self, angles, uses_radians):
+
         self.clear()
 
         self.last_function = "sinh"
@@ -114,12 +143,10 @@ class GraphingSurface(window.Surface):
 
         i = -0.6 * self.x_size
         while i * self.x_unit <= 0.5 * self.x_size:
-            self.points.append((self.zero_point[0] + i * self.x_unit,
-                                self.zero_point[1] - self.y_unit * math.sinh(i * conversion_multiplier)))
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.sinh(i * conversion_multiplier)))
             i = i + 0.01
 
-        self.highlights.append((self.zero_point[0] + angles * self.x_unit,
-                                self.zero_point[1] - self.y_unit * math.sinh(angles * conversion_multiplier)))
+        self.highlights.append((self.zero_point[0] + angles * self.x_unit, self.zero_point[1] - self.y_unit * math.sinh(angles * conversion_multiplier)))
 
     def draw_cosh(self, angles, uses_radians):
 
@@ -138,13 +165,32 @@ class GraphingSurface(window.Surface):
 
         i = -0.6 * self.x_size
         while i * self.x_unit <= 0.5 * self.x_size:
-            self.points.append((self.zero_point[0] + i * self.x_unit,
-                                self.zero_point[1] - self.y_unit * math.cosh(i * conversion_multiplier)))
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.cosh(i * conversion_multiplier)))
             i = i + 0.01
 
-        self.highlights.append((self.zero_point[0] + angles * self.x_unit,
-                                self.zero_point[1] - self.y_unit * math.cosh(angles * conversion_multiplier)))
+        self.highlights.append((self.zero_point[0] + angles * self.x_unit, self.zero_point[1] - self.y_unit * math.cosh(angles * conversion_multiplier)))
 
+    def draw_tanh(self, angles, uses_radians):
+
+        self.clear()
+
+        self.x_unit = 75
+        self.y_unit = 75
+
+        self.last_function = "tanh"
+
+        conversion_multiplier = 1
+        if not uses_radians:
+            conversion_multiplier = math.pi / 180
+
+        self.x_unit = self.x_unit * conversion_multiplier
+
+        i = -0.6 * self.x_size
+        while i * self.x_unit <= 0.5 * self.x_size:
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.tanh(i * conversion_multiplier)))
+            i = i + 0.01
+
+        self.highlights.append((self.zero_point[0] + angles * self.x_unit, self.zero_point[1] - self.y_unit * math.tanh(angles * conversion_multiplier)))
 
     def draw_quadratic(self, a, b, c, solutions):
 

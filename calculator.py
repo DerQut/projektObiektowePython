@@ -251,7 +251,6 @@ class Calc:
         self.simplify()
 
     def round(self):
-        print(abs(self.value) - int(abs(self.value)))
         if abs(self.value) - int(abs(self.value)) >= 0.5:
             self.value = int(self.value) + numpy.sign(self.value)
         else:
@@ -328,7 +327,7 @@ class Calc:
             self.text_obj.text = "0"
             self.has_comma = False
 
-        elif self.value > 0.999:
+        elif 1 > self.value > 0.999:
             self.value = 1
             self.text_obj.text = "1"
             self.has_comma = False
@@ -458,8 +457,10 @@ def button_handler(event_key, needs_shift, is_shifting):
 
     elif event_key == pygame.K_t:
         if not is_shifting:
+            graphing_surface.draw_tangent(calculator_obj.value, calculator_obj.uses_radians)
             calculator_obj.tan()
         else:
+            graphing_surface.draw_tanh(calculator_obj.value, calculator_obj.uses_radians)
             calculator_obj.tanh()
 
     # constants
