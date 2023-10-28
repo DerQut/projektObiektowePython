@@ -196,8 +196,8 @@ class GraphingSurface(window.Surface):
 
         self.clear()
 
-        self.x_unit = 20
-        self.y_unit = 20
+        self.x_unit = 50
+        self.y_unit = 50
 
         i = -0.6 * self.x_size
         while i*self.x_unit < 0.5 * self.x_size:

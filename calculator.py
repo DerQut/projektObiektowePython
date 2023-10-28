@@ -364,6 +364,7 @@ class Calc:
 
         elif self.bx and not self.ax2:
             self.x2 = -1 * self.c / self.bx
+            self.x1 = "NULL"
 
 
 def button_handler(event_key, needs_shift, is_shifting):
@@ -590,16 +591,25 @@ def button_handler(event_key, needs_shift, is_shifting):
 
 
 def loop_action():
-    if calculator_obj.x1 != "NULL":
+    result_buttons_check()
+
+
+def result_buttons_check():
+    if calculator_obj.x1 == "NULL":
+        button_first_result.label.colour = button_colour_light
+        button_first_result.label.change_text("NULL")
+    else:
         button_first_result.label.colour = text_colour
-        button_first_result.label.change_text("{:.1f}".format(float(calculator_obj.x1)))
-    if calculator_obj.x2 != "NULL":
-        button_second_result.label.colour = text_colour
-        button_second_result.label.change_text("{:.1f}".format(float(calculator_obj.x2)))
-    button_second_result.center_text()
+        button_first_result.label.change_text("{:.2f}".format(float(calculator_obj.x1)))
     button_first_result.center_text()
 
-
+    if calculator_obj.x2 == "NULL":
+        button_second_result.label.colour = button_colour_light
+        button_second_result.label.change_text("NULL")
+    else:
+        button_second_result.label.colour = text_colour
+        button_second_result.label.change_text("{:.2f}".format(float(calculator_obj.x2)))
+    button_second_result.center_text()
 
 
 bg_colour = (43, 34, 34)
