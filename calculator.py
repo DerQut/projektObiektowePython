@@ -322,7 +322,7 @@ class Calc:
                 self.calculate_value()
 
     def trig_crop(self):
-        if self.value < 10**-15:
+        if abs(self.value) < 10**-13:
             self.value = 0
             self.text_obj.text = "0"
             self.has_comma = False
@@ -592,6 +592,7 @@ def button_handler(event_key, needs_shift, is_shifting):
 
 def loop_action():
     result_buttons_check()
+    calculator_obj.crop()
 
 
 def result_buttons_check():
@@ -600,7 +601,7 @@ def result_buttons_check():
         button_first_result.label.change_text("NULL")
     else:
         button_first_result.label.colour = text_colour
-        button_first_result.label.change_text("{:.2f}".format(float(calculator_obj.x1)))
+        button_first_result.label.change_text("{:.1f}".format(float(calculator_obj.x1)))
     button_first_result.center_text()
 
     if calculator_obj.x2 == "NULL":
@@ -608,7 +609,7 @@ def result_buttons_check():
         button_second_result.label.change_text("NULL")
     else:
         button_second_result.label.colour = text_colour
-        button_second_result.label.change_text("{:.2f}".format(float(calculator_obj.x2)))
+        button_second_result.label.change_text("{:.1f}".format(float(calculator_obj.x2)))
     button_second_result.center_text()
 
 
@@ -706,7 +707,7 @@ top_display_surface = window.Surface(calculator_window, 0, 0, 569, 56, bg_colour
 
 
 ###
-graphing_surface = graph.GraphingSurface(calculator_window, 570, 0, 480, 295, (31, 22, 22), text_colour, 1, button_colour_dark, orange)
+graphing_surface = graph.GraphingSurface(calculator_window, 571, 0, 480, 295, (31, 22, 22), text_colour, 1, button_colour_light, orange)
 
 ###
 calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 22)

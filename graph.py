@@ -4,6 +4,7 @@ import pygame
 
 import window
 import ui_elements
+import assets
 
 
 class GraphingSurface(window.Surface):
@@ -14,6 +15,7 @@ class GraphingSurface(window.Surface):
         self.line_colour = line_colour
         self.axis_colour = axis_colour
         self.highlight_colour = highlight_colour
+        self.highlight_colour_2 = (highlight_colour[0]*0.5, highlight_colour[1]*0.5, highlight_colour[2]*0.5)
 
         self.line_width = line_width
 
@@ -24,6 +26,11 @@ class GraphingSurface(window.Surface):
 
         self.x_unit = 75
         self.y_unit = 75
+
+        self.x_delimiter = 1
+        self.y_delimiter = 1
+
+        self.x_uses_floats = False
 
         self.zero_point = (0.5*self.x_size, 0.5*self.y_size)
 
@@ -37,11 +44,14 @@ class GraphingSurface(window.Surface):
             if element.is_visible:
                 element.draw()
 
+        for highlight in self.highlights:
+            pygame.draw.circle(self.pg_surface, self.highlight_colour_2, highlight, 10)
+
         if len(self.points) > 1:
             pygame.draw.lines(self.pg_surface, self.line_colour, False, self.points, self.line_width)
 
         for highlight in self.highlights:
-            pygame.draw.circle(self.pg_surface, self.highlight_colour, highlight, 5)
+            pygame.draw.circle(self.pg_surface, self.highlight_colour, highlight, 4)
 
         self.window.screen.blit(self.pg_surface, (self.x_cord, self.y_cord))
 
@@ -54,9 +64,48 @@ class GraphingSurface(window.Surface):
         self.x_unit = 75
         self.y_unit = 75
 
+        self.x_delimiter = 1
+        self.y_delimiter = 1
+
+        self.x_uses_floats = False
+
     def draw_axis(self):
+        # y
         pygame.draw.line(self.pg_surface, self.axis_colour, (0, self.zero_point[1]), (self.x_size, self.zero_point[1]))
+
+        y_cord = 0
+        i = 0
+        while y_cord <= self.y_size - self.zero_point[1]:
+            pygame.draw.line(self.pg_surface, self.axis_colour, (self.zero_point[0], self.zero_point[1]+y_cord), (self.zero_point[0]+5, self.zero_point[1]+y_cord), 1)
+            pygame.draw.line(self.pg_surface, self.axis_colour, (self.zero_point[0], self.zero_point[1]-y_cord), (self.zero_point[0]+5, self.zero_point[1]-y_cord), 1)
+
+            if i:
+                self.pg_surface.blit(assets.SF_Pro_Light_16.render(str(self.y_delimiter*i), True, self.axis_colour), (self.zero_point[0]+7, self.zero_point[1]-y_cord-10))
+                self.pg_surface.blit(assets.SF_Pro_Light_16.render(str(self.y_delimiter*-i), True, self.axis_colour), (self.zero_point[0]+7, self.zero_point[1]+y_cord-10))
+
+            y_cord = y_cord + self.y_delimiter * self.y_unit
+            i = i + 1
+
+
+        # x
         pygame.draw.line(self.pg_surface, self.axis_colour, (self.zero_point[0], 0), (self.zero_point[0], self.y_size))
+
+        x_cord = 0
+        i = 0
+        while x_cord <= self.x_size - self.zero_point[0]:
+            pygame.draw.line(self.pg_surface, self.axis_colour, (self.zero_point[0]+x_cord, self.zero_point[1]), (self.zero_point[0]+x_cord, self.zero_point[1]+5), 1)
+            pygame.draw.line(self.pg_surface, self.axis_colour, (self.zero_point[0]-x_cord, self.zero_point[1]), (self.zero_point[0]-x_cord, self.zero_point[1]+5), 1)
+
+            if i:
+                if self.x_uses_floats:
+                    self.pg_surface.blit(assets.SF_Pro_Light_16.render("{:.2f}".format(float(self.x_delimiter*i)), True, self.axis_colour), (self.zero_point[0]+x_cord-12, self.zero_point[1]+10))
+                    self.pg_surface.blit(assets.SF_Pro_Light_16.render("{:.2f}".format(float(self.x_delimiter*-i)), True, self.axis_colour), (self.zero_point[0]-x_cord-12, self.zero_point[1]+10))
+                else:
+                    self.pg_surface.blit(assets.SF_Pro_Light_16.render(str(self.x_delimiter*i), True, self.axis_colour), (self.zero_point[0]+x_cord-5, self.zero_point[1]+10))
+                    self.pg_surface.blit(assets.SF_Pro_Light_16.render(str(self.x_delimiter*-i), True, self.axis_colour), (self.zero_point[0]-x_cord-5, self.zero_point[1]+10))
+
+            x_cord = x_cord + self.x_delimiter*self.x_unit
+            i = i + 1
 
     def draw_sine(self, angles, uses_radians):
 
@@ -64,14 +113,21 @@ class GraphingSurface(window.Surface):
 
         self.last_function = "sin"
 
-        self.y_unit = 50
+        self.y_unit = 100
         self.x_unit = 50
+
+        self.x_delimiter = math.pi/2
+        self.x_uses_floats = True
+        self.y_delimiter = 1
 
         conversion_multiplier = 1
         if not uses_radians:
             conversion_multiplier = math.pi/180
+            self.x_delimiter = 90
+            self.x_uses_floats = False
 
         self.x_unit = self.x_unit * conversion_multiplier
+        print(math.sin(math.radians(190)))
 
         i = -0.6 * self.x_size
         while i*self.x_unit <= 0.5 * self.x_size:
@@ -87,11 +143,16 @@ class GraphingSurface(window.Surface):
         self.last_function = "cos"
 
         self.x_unit = 50
-        self.y_unit = 50
+        self.y_unit = 100
+
+        self.x_delimiter = math.pi/2
+
+        self.x_uses_floats = uses_radians
 
         conversion_multiplier = 1
         if not uses_radians:
             conversion_multiplier = math.pi / 180
+            self.x_delimiter = 90
 
         self.x_unit = self.x_unit * conversion_multiplier
 
@@ -113,9 +174,12 @@ class GraphingSurface(window.Surface):
         self.x_unit = 75
         self.y_unit = 75
 
-        conversion_multiplier = 1
-        if not uses_radians:
-            conversion_multiplier = math.pi / 180
+        self.x_uses_floats = uses_radians
+
+        self.y_delimiter = 1
+
+        conversion_multiplier = math.pi / 180
+        self.x_delimiter = 90
 
         self.x_unit = self.x_unit * conversion_multiplier
 
@@ -126,17 +190,27 @@ class GraphingSurface(window.Surface):
 
         self.highlights.append((self.zero_point[0] + angles * self.x_unit, self.zero_point[1] - self.y_unit * math.tan(angles * conversion_multiplier)))
 
+        if uses_radians:
+            self.x_delimiter = math.pi/2
+            self.x_unit = self.x_unit * 180/math.pi
+            self.x_uses_floats = True
+
     def draw_sinh(self, angles, uses_radians):
 
         self.clear()
 
         self.last_function = "sinh"
 
-        self.x_unit = 25
-        self.y_unit = 25
+        self.x_unit = 33
+        self.y_unit = 40
 
+        self.x_delimiter = math.pi/2
+
+        self.x_uses_floats = uses_radians
         conversion_multiplier = 1
+
         if not uses_radians:
+            self.x_delimiter = 90
             conversion_multiplier = math.pi / 180
 
         self.x_unit = self.x_unit * conversion_multiplier
@@ -152,13 +226,20 @@ class GraphingSurface(window.Surface):
 
         self.clear()
 
-        self.x_unit = 25
-        self.y_unit = 25
+        self.x_unit = 33
+        self.y_unit = 40
+
+        self.y_delimiter = 1
+
+        self.x_delimiter = math.pi/2
 
         self.last_function = "cosh"
 
+        self.x_uses_floats = uses_radians
+
         conversion_multiplier = 1
         if not uses_radians:
+            self.x_delimiter = 90
             conversion_multiplier = math.pi / 180
 
         self.x_unit = self.x_unit * conversion_multiplier
@@ -174,18 +255,24 @@ class GraphingSurface(window.Surface):
 
         self.clear()
 
-        self.x_unit = 75
-        self.y_unit = 75
+        self.x_unit = 33
+        self.y_unit = 40
+
+        self.x_uses_floats = uses_radians
+
+        self.x_delimiter = math.pi/2
+        self.y_delimiter = 1
 
         self.last_function = "tanh"
 
         conversion_multiplier = 1
         if not uses_radians:
+            self.x_delimiter = 90
             conversion_multiplier = math.pi / 180
 
         self.x_unit = self.x_unit * conversion_multiplier
 
-        i = -0.6 * self.x_size
+        i = -self.x_size
         while i * self.x_unit <= 0.5 * self.x_size:
             self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.tanh(i * conversion_multiplier)))
             i = i + 0.01
@@ -199,14 +286,16 @@ class GraphingSurface(window.Surface):
         self.x_unit = 50
         self.y_unit = 50
 
+        self.x_delimiter = 1
+        self.y_delimiter = 1
+
         i = -0.6 * self.x_size
         while i*self.x_unit < 0.5 * self.x_size:
 
             self.points.append((self.zero_point[0] + i*self.x_unit, self.zero_point[1]-self.y_unit*(a*i**2 + b*i + c)))
-            i = i + 0.01
+            i = i + 0.001
 
         for solution in solutions:
-            print(solution)
             if solution != "NULL":
                 self.highlights.append((self.zero_point[0] + solution*self.x_unit, self.zero_point[1]))
 
