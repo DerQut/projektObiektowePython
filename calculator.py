@@ -39,8 +39,8 @@ class Calc:
         self.bx = 0
         self.c = 0
 
-        self.x1 = 0
-        self.x2 = 0
+        self.x1 = "NULL"
+        self.x2 = "NULL"
 
     def change_display_value(self, key_pressed):
 
@@ -96,8 +96,8 @@ class Calc:
         self.ax2 = 0
         self.bx = 0
         self.c = 0
-        self.x1 = 0
-        self.x2 = 0
+        self.x1 = "NULL"
+        self.x2 = "NULL"
 
     def change_sign(self):
         self.text_obj.text = str(self.value*-1)
@@ -161,9 +161,15 @@ class Calc:
         else:
             self.value = math.sin(self.value / 180 * math.pi)
         self.simplify()
+        self.trig_crop()
 
     def sinh(self):
-        self.value = math.sinh(self.value)
+        if self.uses_radians:
+            self.value = math.sinh(self.value)
+        else:
+            self.value = math.sinh(self.value * math.pi / 180)
+
+        self.trig_crop()
         self.simplify()
 
     def cos(self):
@@ -171,6 +177,8 @@ class Calc:
             self.value = math.cos(self.value)
         else:
             self.value = math.cos(self.value / 180 * math.pi)
+
+        self.trig_crop()
         self.simplify()
 
     def cosh(self):
@@ -178,14 +186,26 @@ class Calc:
             self.value = math.cosh(self.value)
         else:
             self.value = math.cosh(self.value * math.pi / 180)
+
+        self.trig_crop()
         self.simplify()
 
     def tan(self):
-        self.value = math.tan(self.value)
+        if self.uses_radians:
+            self.value = math.tan(self.value)
+        else:
+            self.value = math.tan(self.value * math.pi / 180)
+
+        self.trig_crop()
         self.simplify()
 
     def tanh(self):
-        self.value = math.tanh(self.value)
+        if self.uses_radians:
+            self.value = math.tanh(self.value)
+        else:
+            self.value = math.tanh(self.value * math.pi / 180)
+
+        self.trig_crop()
         self.simplify()
 
     def pi(self):
@@ -302,6 +322,17 @@ class Calc:
                     self.text_obj.text = "-" + self.text_obj.text
                 self.calculate_value()
 
+    def trig_crop(self):
+        if self.value < 10**-15:
+            self.value = 0
+            self.text_obj.text = "0"
+            self.has_comma = False
+
+        elif self.value > 0.999:
+            self.value = 1
+            self.text_obj.text = "1"
+            self.has_comma = False
+
     def crop_buffer(self):
         if abs(self.buffer >= int("1" + self.max_length * "0")):
             if self.buffer > 0:
@@ -323,14 +354,17 @@ class Calc:
 
     def quadratic(self):
 
-        self.x1 = 0
-        self.x2 = 0
+        self.x1 = "NULL"
+        self.x2 = "NULL"
 
         delta = self.bx**2 - 4*self.ax2*self.c
 
         if delta >= 0 and self.ax2:
             self.x1 = (-self.bx - math.sqrt(delta))/(2*self.ax2)
             self.x2 = (-self.bx + math.sqrt(delta))/(2*self.ax2)
+
+        elif self.bx and not self.ax2:
+            self.x2 = -1 * self.c / self.bx
 
 
 def button_handler(event_key, needs_shift, is_shifting):
@@ -349,6 +383,7 @@ def button_handler(event_key, needs_shift, is_shifting):
             calculator_obj.soft_clear()
         else:
             calculator_obj.hard_clear()
+            graphing_surface.clear()
 
             button_ax2_value.label.colour = button_colour_light
             button_bx_value.label.colour = button_colour_light
@@ -362,6 +397,14 @@ def button_handler(event_key, needs_shift, is_shifting):
 
             button_c_value.label.change_text("0")
             button_c_value.center_text()
+
+            button_first_result.label.colour = button_colour_light
+            button_first_result.label.change_text("NULL")
+            button_first_result.center_text()
+
+            button_second_result.label.colour = button_colour_light
+            button_second_result.label.change_text("NULL")
+            button_second_result.center_text()
 
     # Useful buttons
     elif event_key == pygame.K_COMMA or event_key == pygame.K_PERIOD:
@@ -399,14 +442,18 @@ def button_handler(event_key, needs_shift, is_shifting):
     # trigonometric functions
     elif event_key == pygame.K_s:
         if not is_shifting:
+            graphing_surface.draw_sine(calculator_obj.value, calculator_obj.uses_radians)
             calculator_obj.sin()
         else:
+            graphing_surface.draw_sinh(calculator_obj.value, calculator_obj.uses_radians)
             calculator_obj.sinh()
 
-    elif event_key == pygame.K_k:
+    elif event_key == pygame.K_c:
         if not is_shifting:
+            graphing_surface.draw_cosine(calculator_obj.value, calculator_obj.uses_radians)
             calculator_obj.cos()
         else:
+            graphing_surface.draw_cosh(calculator_obj.value, calculator_obj.uses_radians)
             calculator_obj.cosh()
 
     elif event_key == pygame.K_t:
@@ -478,6 +525,10 @@ def button_handler(event_key, needs_shift, is_shifting):
         button_ax2_value.label.reload()
         button_ax2_value.center_text()
 
+        calculator_obj.quadratic()
+
+        graphing_surface.draw_quadratic(calculator_obj.ax2, calculator_obj.bx, calculator_obj.c, [calculator_obj.x1, calculator_obj.x2])
+
     elif event_key == pygame.K_F2:
         button_bx_value.center_text()
         if is_shifting:
@@ -490,6 +541,10 @@ def button_handler(event_key, needs_shift, is_shifting):
         button_bx_value.label.text = "{:.2f}".format(calculator_obj.bx)
         button_bx_value.label.reload()
         button_bx_value.center_text()
+
+        calculator_obj.quadratic()
+
+        graphing_surface.draw_quadratic(calculator_obj.ax2, calculator_obj.bx, calculator_obj.c, [calculator_obj.x1, calculator_obj.x2])
 
     elif event_key == pygame.K_F3:
         button_c_value.center_text()
@@ -504,12 +559,20 @@ def button_handler(event_key, needs_shift, is_shifting):
         button_c_value.label.reload()
         button_c_value.center_text()
 
+        calculator_obj.quadratic()
+
+        graphing_surface.draw_quadratic(calculator_obj.ax2, calculator_obj.bx, calculator_obj.c, [calculator_obj.x1, calculator_obj.x2])
+
     # Useless shit
     elif event_key == pygame.K_z:
         calculator_obj.round()
 
     elif event_key == pygame.K_q:
         calculator_obj.randomise()
+
+    elif event_key == pygame.K_g:
+        calculator_obj.quadratic()
+        graphing_surface.draw_quadratic(calculator_obj.ax2, calculator_obj.bx, calculator_obj.c, [calculator_obj.x1, calculator_obj.x2])
 
     # Change buttons appearance depending on L_SHIFT input
     elif event_key == K_LSHIFT:
@@ -519,8 +582,6 @@ def button_handler(event_key, needs_shift, is_shifting):
             button_clear.label.change_text("C")
         button_clear.center_text()
 
-    calculator_obj.quadratic()
-
     calculator_obj.text_obj.reload()
     calculator_obj.text_obj.push_right(8)
 
@@ -528,8 +589,12 @@ def button_handler(event_key, needs_shift, is_shifting):
 
 
 def loop_action():
-    button_first_result.label.change_text("{:.1f}".format(float(calculator_obj.x1)))
-    button_second_result.label.change_text("{:.1f}".format(float(calculator_obj.x2)))
+    if calculator_obj.x1 != "NULL":
+        button_first_result.label.colour = text_colour
+        button_first_result.label.change_text("{:.1f}".format(float(calculator_obj.x1)))
+    if calculator_obj.x2 != "NULL":
+        button_second_result.label.colour = text_colour
+        button_second_result.label.change_text("{:.1f}".format(float(calculator_obj.x2)))
     button_second_result.center_text()
     button_first_result.center_text()
 
@@ -615,13 +680,13 @@ button_round = ui_elements.LabelledButton(scientific_surface, 0, 48, 56, 47, but
 button_ax2_value = ui_elements.LabelledButton(scientific_surface, 57, 48, 56, 47, button_colour_dark, pygame.K_F1, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_18, True)
 button_bx_value = ui_elements.LabelledButton(scientific_surface, 114, 48, 56, 47, button_colour_dark, pygame.K_F2, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_18, True)
 button_c_value = ui_elements.LabelledButton(scientific_surface, 171, 48, 56, 47, button_colour_dark, pygame.K_F3, button_colour_light, "0", button_colour_light, assets.SF_Pro_Medium_18, True)
-button_first_result = ui_elements.LabelledButton(scientific_surface, 228, 48, 56, 47, button_colour_dark, 0, button_colour_dark, "0", button_colour_light, assets.SF_Pro_Medium_18, 0.5)
+button_first_result = ui_elements.LabelledButton(scientific_surface, 228, 48, 56, 47, button_colour_dark, 0, button_colour_dark, "NULL", button_colour_light, assets.SF_Pro_Medium_18, 0.5)
 
 button_random = ui_elements.LabelledButton(scientific_surface, 0, 0, 56, 47, button_colour_dark, pygame.K_q, button_colour_light, "Rand", text_colour, assets.SF_Pro_Medium_18, 0.5)
 button_ax2 = ui_elements.LabelledButton(scientific_surface, 57, 0, 56, 47, button_colour_dark, pygame.K_F1, button_colour_light, "ax²", text_colour, assets.SF_Pro_Medium_20, False)
 button_bx = ui_elements.LabelledButton(scientific_surface, 114, 0, 56, 47, button_colour_dark, pygame.K_F2, button_colour_light, "bx", text_colour, assets.SF_Pro_Medium_20, False)
 button_c = ui_elements.LabelledButton(scientific_surface, 171, 0, 56, 47, button_colour_dark, pygame.K_F3, button_colour_light, "c", text_colour, assets.SF_Pro_Medium_20, False)
-button_second_result = ui_elements.LabelledButton(scientific_surface, 228, 0, 56, 47, button_colour_dark, 0, button_colour_dark, "0", button_colour_light, assets.SF_Pro_Medium_18, 0.5)
+button_second_result = ui_elements.LabelledButton(scientific_surface, 228, 0, 56, 47, button_colour_dark, 0, button_colour_dark, "NULL", button_colour_light, assets.SF_Pro_Medium_18, 0.5)
 button_graph = ui_elements.LabelledButton(scientific_surface, 285, 0, 56, 47, button_colour_dark, pygame.K_g, button_colour_light, "Graph", text_colour, assets.SF_Pro_Medium_18, 0.5)
 
 
@@ -630,7 +695,7 @@ top_display_surface = window.Surface(calculator_window, 0, 0, 569, 56, bg_colour
 
 
 ###
-graphing_surface = graph.GraphingSurface(calculator_window, 570, 0, 480, 295, (31, 22, 22), text_colour, 5)
+graphing_surface = graph.GraphingSurface(calculator_window, 570, 0, 480, 295, (31, 22, 22), text_colour, 1, button_colour_dark, orange)
 
 ###
 calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 22)
