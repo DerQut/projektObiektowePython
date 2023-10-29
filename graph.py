@@ -188,12 +188,16 @@ class GraphingSurface(window.Surface):
             self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.tan(i * conversion_multiplier)))
             i = i + 0.01
 
-        self.highlights.append((self.zero_point[0] + angles * self.x_unit, self.zero_point[1] - self.y_unit * math.tan(angles * conversion_multiplier)))
-
         if uses_radians:
             self.x_delimiter = math.pi/2
             self.x_unit = self.x_unit * 180/math.pi
             self.x_uses_floats = True
+            conversion_multiplier = 1
+
+        highlight_x = self.zero_point[0] + angles*self.x_unit
+        while highlight_x+10 >= self.x_size:
+            highlight_x = highlight_x - self.x_delimiter * self.x_unit * 2
+        self.highlights.append((highlight_x, self.zero_point[1] - self.y_unit * math.tan(angles * conversion_multiplier)))
 
     def draw_sinh(self, angles, uses_radians):
 
