@@ -1,5 +1,6 @@
 import math
 
+import numpy
 import pygame
 
 import window
@@ -45,13 +46,19 @@ class GraphingSurface(window.Surface):
                 element.draw()
 
         for highlight in self.highlights:
-            pygame.draw.circle(self.pg_surface, self.highlight_colour_2, highlight, 10)
+            pygame.draw.circle(self.pg_surface, self.highlight_colour_2, highlight, 7)
+            if highlight[0] != self.zero_point[0]:
+                pygame.draw.line(self.pg_surface, self.highlight_colour_2, highlight, (highlight[0], self.zero_point[1]), 1)
+            if highlight[1] != self.zero_point[1]:
+                pygame.draw.line(self.pg_surface, self.highlight_colour_2, highlight, (self.zero_point[0], highlight[1]), 1)
 
         if len(self.points) > 1:
             pygame.draw.lines(self.pg_surface, self.line_colour, False, self.points, self.line_width)
 
         for highlight in self.highlights:
-            pygame.draw.circle(self.pg_surface, self.highlight_colour, highlight, 4)
+            pygame.draw.circle(self.pg_surface, self.highlight_colour, highlight, 3)
+
+            self.pg_surface.blit((assets.SF_Pro_Light_16.render("x=" + ("{:.1f}".format((highlight[0]-self.zero_point[0]) / self.x_unit)) + ", y="+"{:.1f}".format(((self.zero_point[1]-highlight[1]) / self.y_unit)), True, self.highlight_colour)), (highlight[0]+7, highlight[1]+10*(numpy.sign(highlight[1]-self.zero_point[1])-1)))
 
         self.window.screen.blit(self.pg_surface, (self.x_cord, self.y_cord))
 
@@ -171,8 +178,8 @@ class GraphingSurface(window.Surface):
 
         self.last_function = "tan"
 
-        self.x_unit = 75
-        self.y_unit = 75
+        self.x_unit = 50
+        self.y_unit = 50
 
         self.x_uses_floats = uses_radians
 
@@ -194,10 +201,7 @@ class GraphingSurface(window.Surface):
             self.x_uses_floats = True
             conversion_multiplier = 1
 
-        highlight_x = self.zero_point[0] + angles*self.x_unit
-        while highlight_x+10 >= self.x_size:
-            highlight_x = highlight_x - self.x_delimiter * self.x_unit * 2
-        self.highlights.append((highlight_x, self.zero_point[1] - self.y_unit * math.tan(angles * conversion_multiplier)))
+        self.highlights.append((self.zero_point[0] + angles*self.x_unit, self.zero_point[1] - self.y_unit * math.tan(angles * conversion_multiplier)))
 
     def draw_sinh(self, angles, uses_radians):
 
@@ -303,3 +307,116 @@ class GraphingSurface(window.Surface):
             if solution != "NULL":
                 self.highlights.append((self.zero_point[0] + solution*self.x_unit, self.zero_point[1]))
 
+    def draw_y_to_x(self, x, y):
+
+        self.clear()
+
+        self.last_function = f"{y}_to_x"
+
+        self.y_delimiter = abs(int(y ** x))
+        self.y_unit = abs(int(33 / (y ** x)))
+
+        if abs(int(y ** x)) > 1:
+            self.x_unit = abs(int(66/x))
+            self.x_delimiter = abs(int(x))
+        else:
+            self.x_unit = 66
+            self.x_delimiter = 1
+            self.y_delimiter = abs(int(y))
+            self.y_unit = abs(int(33/y))
+
+        print(self.y_delimiter)
+
+        self.x_uses_floats = False
+
+        i = -0.6 * self.x_size
+        while i * self.x_unit < 0.5 * self.x_size:
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * (y**i)))
+            i = i + (abs(x)+0.5)/1000
+
+        self.highlights.append((self.zero_point[0] + x * self.x_unit, self.zero_point[1] - y**x * self.y_unit))
+
+    def draw_x_to_y(self, x, y):
+
+        if y < 1:
+            return 1
+
+        self.clear()
+
+        self.last_function = f"x_to_{y}"
+
+        self.x_unit = 33/x
+        self.y_unit = 33/x**y
+
+        self.x_delimiter = x
+        self.y_delimiter = x**y*2
+
+        self.x_uses_floats = False
+
+        i = -0.6 * self.x_size
+        while i * self.x_unit < 0.5 * self.x_size:
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * (i**y)))
+            i = i + 1000/x
+
+        self.highlights.append((self.zero_point[0] + x * self.x_unit, self.zero_point[1] - x**y * self.y_unit))
+
+    def draw_root(self, x, root):
+
+        if x < 0 and not root%2:
+            return 1
+
+        self.clear()
+
+        self.last_function = f"{root} root of x"
+
+        if abs(x) >= 1:
+            self.x_unit = 33 / abs(x)
+            self.x_delimiter = int(abs(x))
+            self.y_unit = 33 / math.pow(abs(x), 1/root)
+            self.y_delimiter = int(math.pow(abs(x), 1/root))
+        else:
+            self.x_unit = 33
+            self.x_delimiter = 1
+            self.y_unit = 33
+            self.y_delimiter = 1
+
+        self.x_uses_floats = False
+
+        i = 0
+        if root % 2:
+            i = -0.6 * self.x_size
+
+        while i * self.x_unit < 0.5 * self.x_size:
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * numpy.sign(i)*(pow(abs(i), 1/root))))
+            i = i + x/10000
+
+        self.highlights.append((self.zero_point[0] + x * self.x_unit, self.zero_point[1] - self.y_unit * numpy.sign(i)*pow(abs(x), 1/root)))
+
+    def draw_log(self, x, base):
+
+        if x <= 0:
+            return 1
+
+        self.clear()
+
+        print(math.log(x, base))
+
+        if math.log(x, base) > 1:
+            self.x_unit = 66/x
+            self.x_delimiter = int(x)
+            self.y_delimiter = int(math.log(x, base))
+            self.y_unit = 66/math.log(x, base)
+
+        else:
+            self.x_unit = 66
+            self.y_unit = 66
+            self.x_delimiter = 1
+            self.y_delimiter = 1
+
+        i=0.000000000000000001
+        while i * self.x_unit < 0.5 * self.x_size:
+            print(i)
+            self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.log(i, base)))
+            i = i + x/10000
+
+        self.highlights.append((self.zero_point[0] + x * self.x_unit, self.zero_point[1] - self.y_unit * math.log(x, base)))

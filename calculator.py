@@ -472,29 +472,37 @@ def button_handler(event_key, needs_shift, is_shifting):
         if not is_shifting:
             calculator_obj.e()
         else:
+            graphing_surface.draw_y_to_x(calculator_obj.value, math.e)
             calculator_obj.e_to_x()
 
     # logarithms
     elif event_key == pygame.K_l:
         if is_shifting:
+            graphing_surface.draw_log(calculator_obj.value, math.e)
             calculator_obj.ln()
         else:
+            graphing_surface.draw_log(calculator_obj.value, 10)
             calculator_obj.log()
 
     # Powers and roots
     elif event_key == pygame.K_2 and is_shifting:
+        graphing_surface.draw_x_to_y(calculator_obj.value, 2)
         calculator_obj.square()
 
     elif event_key == pygame.K_3 and is_shifting:
+        graphing_surface.draw_x_to_y(calculator_obj.value, 3)
         calculator_obj.cube()
 
     elif event_key == pygame.K_r:
         if is_shifting:
+            graphing_surface.draw_root(calculator_obj.value, 3)
             calculator_obj.cubic_root()
         else:
+            graphing_surface.draw_root(calculator_obj.value, 2)
             calculator_obj.square_root()
 
     elif event_key == pygame.K_0 and is_shifting:
+        graphing_surface.draw_y_to_x(calculator_obj.value, 10)
         calculator_obj.ten_to_x()
 
     elif event_key == pygame.K_1 and is_shifting:
@@ -707,7 +715,7 @@ top_display_surface = window.Surface(calculator_window, 0, 0, 569, 56, bg_colour
 
 
 ###
-graphing_surface = graph.GraphingSurface(calculator_window, 571, 0, 480, 295, (31, 22, 22), text_colour, 1, button_colour_light, orange)
+graphing_surface = graph.GraphingSurface(calculator_window, 571, 0, 480, 295, (31, 24, 25), text_colour, 1, button_colour_light, orange)
 
 ###
 calculator_obj = Calc(ui_elements.Text(top_display_surface, 0, 2, assets.SF_Pro_Light_42, "0", text_colour), 22)
