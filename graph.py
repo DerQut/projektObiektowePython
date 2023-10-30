@@ -4,7 +4,6 @@ import numpy
 import pygame
 
 import window
-import ui_elements
 import assets
 
 
@@ -93,7 +92,6 @@ class GraphingSurface(window.Surface):
             y_cord = y_cord + self.y_delimiter * self.y_unit
             i = i + 1
 
-
         # x
         pygame.draw.line(self.pg_surface, self.axis_colour, (self.zero_point[0], 0), (self.zero_point[0], self.y_size))
 
@@ -139,7 +137,7 @@ class GraphingSurface(window.Surface):
         i = -0.6 * self.x_size
         while i*self.x_unit <= 0.5 * self.x_size:
             self.points.append((self.zero_point[0]+i*self.x_unit, self.zero_point[1] - self.y_unit*math.sin(i*conversion_multiplier)))
-            i=i+0.01
+            i = i + 0.01
 
         self.highlights.append((self.zero_point[0]+angles*self.x_unit, self.zero_point[1] - self.y_unit*math.sin(angles*conversion_multiplier)))
 
@@ -369,7 +367,7 @@ class GraphingSurface(window.Surface):
 
     def draw_root(self, x, root):
 
-        if x < 0 and not root%2:
+        if x < 0 and not root % 2:
             return 1
 
         self.clear()
@@ -420,7 +418,7 @@ class GraphingSurface(window.Surface):
             self.y_unit = 66
             self.y_delimiter = 1
 
-        i=(abs(x))/1000000000000
+        i = (abs(x))/1000000000000
         while i * self.x_unit < 0.5 * self.x_size:
             print(i)
             self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.log(i, base)))
