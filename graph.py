@@ -345,18 +345,25 @@ class GraphingSurface(window.Surface):
 
         self.last_function = f"x_to_{y}"
 
-        self.x_unit = 33/x
-        self.y_unit = 33/x**y
+        if abs(x) > 0:
+            self.x_unit = 33/x
+            self.y_unit = 33/x**y
 
-        self.x_delimiter = x
-        self.y_delimiter = x**y*2
+            self.x_delimiter = x
+            self.y_delimiter = x**y*2
+
+        else:
+            self.x_unit = 33
+            self.y_unit = 33
+            self.x_delimiter = 1
+            self.y_delimiter = 1
 
         self.x_uses_floats = False
 
-        i = -0.6 * self.x_size
+        i = -10 * self.x_size
         while i * self.x_unit < 0.5 * self.x_size:
             self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * (i**y)))
-            i = i + 1000/x
+            i = i + (abs(x)+1)/10
 
         self.highlights.append((self.zero_point[0] + x * self.x_unit, self.zero_point[1] - x**y * self.y_unit))
 
@@ -399,24 +406,24 @@ class GraphingSurface(window.Surface):
 
         self.clear()
 
-        print(math.log(x, base))
-
-        if math.log(x, base) > 1:
+        if abs(x) >= 1:
             self.x_unit = 66/x
             self.x_delimiter = int(x)
-            self.y_delimiter = int(math.log(x, base))
-            self.y_unit = 66/math.log(x, base)
-
         else:
             self.x_unit = 66
-            self.y_unit = 66
             self.x_delimiter = 1
+
+        if math.log(x, base) > 1:
+            self.y_delimiter = int(math.log(x, base))
+            self.y_unit = 66/math.log(x, base)
+        else:
+            self.y_unit = 66
             self.y_delimiter = 1
 
-        i=0.000000000000000001
+        i=(abs(x))/1000000000000
         while i * self.x_unit < 0.5 * self.x_size:
             print(i)
             self.points.append((self.zero_point[0] + i * self.x_unit, self.zero_point[1] - self.y_unit * math.log(i, base)))
-            i = i + x/10000
+            i = i + (abs(x)+1)/1000
 
         self.highlights.append((self.zero_point[0] + x * self.x_unit, self.zero_point[1] - self.y_unit * math.log(x, base)))
