@@ -217,6 +217,8 @@ class Calc:
         self.simplify()
 
     def factorial(self):
+        if self.value > 170:
+            return 1
         if not self.has_comma and self.value >= 0:
             self.value = math.factorial(self.value)
         self.simplify()
